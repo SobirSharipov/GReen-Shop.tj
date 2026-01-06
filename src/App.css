@@ -1,0 +1,22 @@
+/* обычные точки */
+.custom-carousel .slick-dots li button {
+  background: #46A358 !important; 
+  width: 12px;
+  height: 4px;
+  border-radius: 10px;
+}
+
+/* активная точка */
+.custom-carousel .slick-dots li.slick-active button {
+  background: #46A358 !important; 
+  width: 20px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE и Edge */
+  scrollbar-width: none;     /* Firefox */
+}
