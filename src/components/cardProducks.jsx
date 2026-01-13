@@ -106,7 +106,7 @@ const CardProducks = () => {
 
     return (
         <div>
-            <div className='flex gap-5 my-10'>
+            <div className='hidden md:flex  gap-5 my-10'>
                 {data.slice(46, 48).map((el) => (
                     <div key={el.id} className='relative overflow-hidden rounded-xl group flex gap-4 w-full bg-[#FBFBFB]'>
                         <img
@@ -114,11 +114,11 @@ const CardProducks = () => {
                             alt="img"
                             className='w-[40%] h-70 object-cover group-hover:brightness-75 transition-all duration-300' />
                         <div className='relative w-[60%] px-5 py-3'>
-                            <p className='font-black text-2xl'>{truncateText(el.name, 23)}</p>
-                            <p className='font-serif text-gray-700 text-l my-4'>{truncateText(el.lorem, 200)}</p>
+                            <p className='font-black md:text-2xl'>{truncateText(el.name, 23)}</p>
+                            <p className='md:font-serif text-gray-700 md:text-l my-4'>{truncateText(el.lorem, 200)}</p>
                             <div className='absolute bottom-4 right-4'>
                                 <Link to={`/info/${el.id}`}>
-                                    <button className='flex gap-4 items-center cursor-pointer bg-[#46A358] text-white font-serif text-xl p-2 px-6 rounded-[8px] hover:bg-[#3a8a47] transition-colors'>
+                                    <button className='flex gap-4 items-center cursor-pointer bg-[#46A358] text-white font-serif md:text-xl p-2 px-6 rounded-[8px] hover:bg-[#3a8a47] transition-colors'>
                                         Find More
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -136,7 +136,7 @@ const CardProducks = () => {
                     <p className='font-serif'> We are an online plant shop offering a wide range of cheap and trendy plants. </p>
                 </div>
 
-                <div className='grid grid-cols-4 gap-8 my-5'>
+                <div className='grid md:grid-cols-4 gap-8 my-5'>
                     {data.slice(16, 24).map((el) => (
                         <div key={el.id} className='relative overflow-hidden rounded-t-xl group h-120'>
                             <img

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
+import logo from '../assets/logo (1).svg';
+import logo1 from '../assets/logo (2).svg';
+import logo2 from '../assets/Visa.svg';
 
-const PaymentMethod = () => {
-    const [selectedPayment, setSelectedPayment] = useState('bank');
-
+const PaymentMethod = ({ selectedPayment, onPaymentChange }) => {
     const handlePaymentSelect = (method) => {
-        setSelectedPayment(method);
+        if (onPaymentChange) {
+            onPaymentChange(method);
+        }
     };
 
     return (
@@ -29,7 +32,10 @@ const PaymentMethod = () => {
                             ? 'text-[#46A358]'
                             : ''
                         }`}>
+                            <div className='flex items-center gap-4'>
                         <p className="font-bold">PayPal</p>
+                                <img src={logo} alt="" />
+                            </div>
                         <p className="text-gray-500 text-sm">ADVERTISING EXPERIENCE</p>
                     </div>
                 </div>
@@ -56,11 +62,15 @@ const PaymentMethod = () => {
                             <div className="w-2 h-2 rounded-full bg-[#46A358]"></div>
                         )}
                     </div>
+                    
                     <div  className={`${selectedPayment === 'mastercard'
                             ? 'text-[#46A358]'
                             : ''
                         }`}>
+                              <div className='flex items-center gap-4'>
                         <p className="font-bold">MasterCard</p>
+                                <img src={logo1} alt="" />
+                                </div>
                         <p className="text-gray-500 text-sm">ADVERTISING EXPERIENCE</p>
                     </div>
                 </div>
@@ -92,7 +102,10 @@ const PaymentMethod = () => {
                             ? 'text-[#46A358]'
                             : ''
                         }`}>
+                            <div className='flex items-center gap-4'>
                         <p className="font-bold">VISA</p>
+                                <img src={logo2} alt="" />
+                            </div>
                         <p className="text-gray-500 text-sm">ADVERTISING EXPERIENCE</p>
                     </div>
                 </div>
@@ -104,7 +117,6 @@ const PaymentMethod = () => {
                     </div>
                 )}
             </div>
-
 
         </div>
     );

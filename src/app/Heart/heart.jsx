@@ -80,9 +80,8 @@ const Heart = () => {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-6 text-center">
         <h1 className="text-2xl font-bold text-[#46A358]">My Favorites</h1>
-        <p className="text-gray-600">{getHeart.length} items</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

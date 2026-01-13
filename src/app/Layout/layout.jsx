@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Link, Outlet, useLocation } from 'react-router'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router'
 import logo from '../../assets/Logo.svg'
 import logo1 from '../../assets/Logo1.svg'
 import { useGetUsersQuery } from '../../services/UserApi';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa6";
 import { Spin } from 'antd';
+import AuthModal from '../../components/AuthModal';
+import MobileDrawer from '../../components/Drawer';
 
 const Layout = () => {
   const { data, isLoading, error } = useGetUsersQuery();
   const location = useLocation();
+  const navigate = useNavigate();
   let [getHeart, setHeart] = useState([])
   let [getCart, setCart] = useState([])
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(null);
 
   useEffect(() => {
     const handleHeartUpdate = () => {
@@ -32,7 +38,7 @@ const Layout = () => {
     };
   }, []);
 
- useEffect(() => {
+  useEffect(() => {
     const handleCartUpdate = (event) => {
       if (event.detail && event.detail.cartItems) {
         setCart(event.detail.cartItems);
@@ -61,14 +67,86 @@ const Layout = () => {
         const newCart = e.newValue ? JSON.parse(e.newValue) : [];
         setCart(newCart);
       }
+      if (e.key === 'isAuthenticated' || e.key === 'user') {
+        setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
+
+    // Check authentication status on mount
+    setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
     
+    // Load user photo
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      if (parsedUser.photo) {
+        setUserPhoto(parsedUser.photo);
+      }
+    }
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  // Listen for photo updates
+  useEffect(() => {
+    const handlePhotoUpdate = (event) => {
+      if (event.detail && event.detail.photo) {
+        setUserPhoto(event.detail.photo);
+      }
+    };
+
+    window.addEventListener('userPhotoUpdated', handlePhotoUpdate);
+
+    return () => {
+      window.removeEventListener('userPhotoUpdated', handlePhotoUpdate);
+    };
+  }, []);
+
+  // Update photo when user data changes
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      setUserPhoto(parsedUser.photo || null);
+    }
+  }, [isAuthenticated]);
+
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+    // Load user photo after authentication
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      if (parsedUser.photo) {
+        setUserPhoto(parsedUser.photo);
+      }
+    }
+  };
+
+  // Listen for openAuthModal event
+  useEffect(() => {
+    const handleOpenAuthModal = () => {
+      setIsAuthModalOpen(true);
+    };
+
+    window.addEventListener('openAuthModal', handleOpenAuthModal);
+
+    return () => {
+      window.removeEventListener('openAuthModal', handleOpenAuthModal);
+    };
+  }, []);
+
+  const handleUserIconClick = () => {
+    if (isAuthenticated) {
+      navigate('/Profile');
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -79,10 +157,10 @@ const Layout = () => {
 
       <div >
         <div className='flex justify-center items-center mt-20'>
-        <img src={logo} alt="" className='w-[20%]' />
+          <img src={logo} alt="" className='w-[20%]' />
         </div>
         <div className="flex justify-center items-center mt-10 ">
-        <Spin size="large" />
+          <Spin size="large" />
         </div>
       </div>
     );
@@ -96,10 +174,27 @@ const Layout = () => {
     <div className='p-[10px]'>
       <header>
         <div className='flex justify-between items-center border-b-2 border-[#46A35880] pb-[10px]'>
-          <div>
+          {/* Mobile: Logo + Drawer Button */}
+          <div className='flex items-center gap-3 md:hidden'>
+            <MobileDrawer 
+              isAuthenticated={isAuthenticated}
+              userPhoto={userPhoto}
+              getHeart={getHeart}
+              getCart={getCart}
+              onUserClick={handleUserIconClick}
+            />
+            <Link to={'/'}>
+            <img src={logo} alt="Logo" className="h-8" />
+            </Link>
+          </div>
+
+          {/* Desktop: Logo */}
+          <div className='hidden md:block'>
             <img src={logo} alt="Logo" />
           </div>
-          <div className='flex gap-15'>
+
+          {/* Desktop: Navigation Links */}
+          <div className='hidden md:flex gap-15'>
             <Link to={'/'}>
               <p className={`${isActive('/') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}>
                 Home
@@ -121,7 +216,9 @@ const Layout = () => {
               </p>
             </Link>
           </div>
-          <div className='flex gap-4'>
+
+          {/* Icons: Heart, Cart, User/Login */}
+          <div className='flex items-center gap-4'>
             <Link to={'/Heart'} className="relative">
               <button className={`p-2 rounded-full transition-colors ${isActive('/Heart') ? 'text-[#46A358]' : 'text-gray-700 hover:text-[#46A358]'}`}>
                 {isActive('/Heart') ? (
@@ -161,21 +258,50 @@ const Layout = () => {
               )}
             </Link>
 
-            <button className='flex gap-2 py-2 px-6 bg-[#46A358] text-white rounded-[10px] hover:bg-[#3a8a47] transition-colors'>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-              </svg>
-              <p>Login</p>
-            </button>
+            {isAuthenticated ? (
+              <button 
+                onClick={handleUserIconClick}
+                className="p-0 rounded-full transition-all hover:ring-2 hover:ring-[#46A358]/20 ring-2 ring-[#46A358]/30"
+                title="My Profile"
+              >
+                {userPhoto ? (
+                  <img
+                    src={userPhoto}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover border-2 border-[#46A358]"
+                  />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#46A358" className="size-6 text-[#46A358]">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                  </svg>
+                )}
+              </button>
+            ) : (
+              <button 
+                onClick={handleUserIconClick}
+                className="hidden mdflex gap-2 items-center py-2 px-6 bg-[#46A358] text-white rounded-[10px] hover:bg-[#3a8a47] transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                </svg>
+                <p>Login</p>
+              </button>
+            )}
           </div>
         </div>
       </header>
       <main className='mt-3'>
         <Outlet />
       </main>
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        onRegisterSuccess={handleAuthSuccess}
+      />
       <footer>
-        <div className='flex gap-4 my-20'>
-          <div className='grid grid-cols-3 gap-8 w-[68%]'>
+        {/* Products and Newsletter Section */}
+        <div className='flex flex-col md:flex-row gap-4 md:gap-4 my-8 md:my-20'>
+          <div className='hidden md:grid  sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 w-full md:w-[68%]'>
             {data.slice(6, 9).map((el) => (
               (
                 <div key={el.id} className='relative overflow-hidden rounded-t-xl group'>
@@ -184,101 +310,109 @@ const Layout = () => {
                     alt="img"
                     className='w-full h-50 object-cover group-hover:brightness-75 transition-all duration-300' />
                   <div className='bg-[#FBFBFB] p-4 py-2 rounded-b-xl'>
-                    <p className='font-serif text-2xl'>{el.name}</p>
-                    <p className='font-serif text-l line-clamp-2 my-2'>${el.lorem}</p>
+                    <p className='font-serif text-lg md:text-2xl'>{el.name}</p>
+                    <p className='font-serif text-sm md:text-l line-clamp-2 my-2'>${el.lorem}</p>
                   </div>
                 </div>
               )
             ))}
           </div>
-          <div className='w-[30%]'>
-            <p className='font-serif mb-3 text-2xl'>Would you like to join newsletters?</p>
+          <div className='w-full md:w-[30%]'>
+            <p className='font-serif mb-3 text-lg md:text-2xl'>Would you like to join newsletters?</p>
             <div className='flex border-[#46A358] border rounded-xl' >
-              <input type="text" placeholder='enter your email address...' className='border-none w-full p-2' />
-              <button className='p-2 px-7 rounded-r-xl bg-[#46A358] text-white font-serif text-2xl'>Join</button>
+              <input type="text" placeholder='enter your email address...' className='border-none w-full p-2 text-sm md:text-base' />
+              <button className='p-2 px-4 md:px-7 rounded-r-xl bg-[#46A358] text-white font-serif text-base md:text-2xl whitespace-nowrap'>Join</button>
             </div>
-            <p className='font-serif text-l  mt-5'>We usually post offers and challenges in newsletter. We’re your online houseplant destination. We offer a wide range of houseplants and accessories shipped directly from our (green)house to yours! </p>
+            <p className='font-serif text-sm md:text-l mt-3 md:mt-5'>We usually post offers and challenges in newsletter. We're your online houseplant destination. We offer a wide range of houseplants and accessories shipped directly from our (green)house to yours! </p>
           </div>
         </div>
 
-        <div className='grid grid-cols-4 items-center rounded-xl bg-[#46A3581A] border border-[#46A358] p-2'>
-          <div>
-            <img src={logo} alt="logo" />
+        {/* Contact Information Section */}
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-0 items-start md:items-center rounded-xl bg-[#46A3581A] border border-[#46A358] p-4 md:p-2'>
+          <div className='flex justify-start'>
+            <img src={logo} alt="logo" className='h-8 md:h-auto' />
           </div>
-          <div className='flex gap-2 items-center'>
-            <button className='text-[#46A358]'>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <div className='flex flex-row gap-2 items-start sm:items-center'>
+            <button className='text-[#46A358] flex-shrink-0'>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 md:size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
               </svg>
             </button>
-            <p className='font-serif text-l'>70 West Buckingham Ave. <br />
+            <p className='font-serif text-sm md:text-l'>70 West Buckingham Ave. <br />
               Farmingdale, NY 11735</p>
           </div>
-          <div className='flex gap-2 items-center'>
-            <button className='text-[#46A358]'>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <div className='hidden md:flex flex-col sm:flex-row gap-2 items-start sm:items-center'>
+            <button className='text-[#46A358] flex-shrink-0'>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 md:size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
               </svg>
             </button>
-            <p className='font-serif text-l'>contact@greenshop.com</p>
+            <p className='font-serif text-sm md:text-l break-all'>contact@greenshop.com</p>
           </div>
-          <div className='flex gap-2 items-center'>
-            <button className='text-[#46A358]'>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <div className='hidden md:flex flex-col sm:flex-row gap-2 items-start sm:items-center'>
+            <button className='text-[#46A358] flex-shrink-0'>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 md:size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 3.75v4.5m0-4.5h-4.5m4.5 0-6 6m3 12c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
               </svg>
             </button>
-            <p className='font-serif text-l'>+88 01911 717 490</p>
+            <p className='font-serif text-sm md:text-l'>+88 01911 717 490</p>
           </div>
         </div>
 
-        <div className='grid grid-cols-4 my-5'>
-          <div>
-            <p className=' font-bold text-2xl'>My Account</p>
-            <p className='font-serif'>My Account</p>
-            <p className='font-serif'>Our stores</p>
-            <p className='font-serif'>Contact us</p>
-            <p className='font-serif'>Career</p>
-            <p className='font-serif'>Specials</p>
+        {/* Links Section */}
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-0 my-5'>
+          <div className='mb-4 md:mb-0'>
+            <p className='font-bold text-lg md:text-2xl mb-2'>My Account</p>
+            <div className='space-y-1'>
+              <p className='font-serif text-sm md:text-base'>My Account</p>
+              <p className='font-serif text-sm md:text-base'>Our stores</p>
+              <p className='font-serif text-sm md:text-base'>Contact us</p>
+              <p className='font-serif text-sm md:text-base'>Career</p>
+              <p className='font-serif text-sm md:text-base'>Specials</p>
+            </div>
           </div>
-          <div>
-            <p className=' font-bold text-2xl'>Help & Guide</p>
-            <p className='font-serif'>Help Center</p>
-            <p className='font-serif'>How to Buy</p>
-            <p className='font-serif'>Shipping & Delivery</p>
-            <p className='font-serif'>Product Policy</p>
-            <p className='font-serif'>How to Return</p>
+          <div className='mb-4 md:mb-0'>
+            <p className='font-bold text-lg md:text-2xl mb-2'>Help & Guide</p>
+            <div className='space-y-1'>
+              <p className='font-serif text-sm md:text-base'>Help Center</p>
+              <p className='font-serif text-sm md:text-base'>How to Buy</p>
+              <p className='font-serif text-sm md:text-base'>Shipping & Delivery</p>
+              <p className='font-serif text-sm md:text-base'>Product Policy</p>
+              <p className='font-serif text-sm md:text-base'>How to Return</p>
+            </div>
           </div>
-          <div>
-            <p className=' font-bold text-2xl'>Categories</p>
-            <p className='font-serif'>House Plants</p>
-            <p className='font-serif'>Potter Plants</p>
-            <p className='font-serif'>Seeds</p>
-            <p className='font-serif'>Small Plants</p>
-            <p className='font-serif'>Accessories</p>
+          <div className='mb-4 md:mb-0'>
+            <p className='font-bold text-lg md:text-2xl mb-2'>Categories</p>
+            <div className='space-y-1'>
+              <p className='font-serif text-sm md:text-base'>House Plants</p>
+              <p className='font-serif text-sm md:text-base'>Potter Plants</p>
+              <p className='font-serif text-sm md:text-base'>Seeds</p>
+              <p className='font-serif text-sm md:text-base'>Small Plants</p>
+              <p className='font-serif text-sm md:text-base'>Accessories</p>
+            </div>
           </div>
-          <div>
-            <p className=' font-bold text-2xl'>Social Media</p>
-            <div className='flex  gap-2 my-2'>
-              <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
-                <FaFacebookF />
+          <div className='mb-4 md:mb-0'>
+            <p className='font-bold text-lg md:text-2xl mb-2'>Social Media</p>
+            <div className='flex gap-2 my-2'>
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
+                <FaFacebookF className="w-4 h-4 md:w-5 md:h-5" />
               </div>
-              <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
-                <FaInstagram />
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
+                <FaInstagram className="w-4 h-4 md:w-5 md:h-5" />
               </div>
-              <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
-                <FaTwitter />
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
+                <FaTwitter className="w-4 h-4 md:w-5 md:h-5" />
               </div>
-              <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
-                <FaLinkedinIn />
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
+                <FaLinkedinIn className="w-4 h-4 md:w-5 md:h-5" />
               </div>
-              <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
-                <FaYoutube />
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
+                <FaYoutube className="w-4 h-4 md:w-5 md:h-5" />
               </div>
             </div>
-            <p className=' font-bold text-2xl'>We accept</p>
-            <img src={logo1} alt="" />
+            <p className='font-bold text-lg md:text-2xl mt-4 mb-2'>We accept</p>
+            <img src={logo1} alt="" className='w-32 md:w-auto' />
           </div>
         </div>
       </footer>

@@ -9,6 +9,7 @@ import Heart from './app/Heart/heart'
 import ToCard from './app/To Card/toCard'
 import Checkout from './app/Checkout/checkout'
 import Info from './app/Info/info'
+import Profile from './app/Profile/profile'
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path='ToCard' element={<ToCard/>}/>
         <Route path='Checkout' element={<Checkout/>}/>
         <Route path='/info/:id' element={<Info/>}/>
+        <Route path='Profile' element={<Profile/>}/>
         </Route>
       </Routes>
     </>

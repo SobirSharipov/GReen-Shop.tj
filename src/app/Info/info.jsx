@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react' // Исправлен импорт
+import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router'
-import { Rate, Spin } from 'antd' // Или другой компонент загрузки
-import axios from 'axios'
+import { Rate, Spin } from 'antd'
 import { useGetUsersQuery } from '../../services/UserApi'
-import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa6'
+import { FaFacebookF, FaInstagram, FaTwitter, FaShoppingCart, FaHeart, FaShareAlt } from 'react-icons/fa'
 
 const Info = () => {
     const { data, refetch } = useGetUsersQuery();
@@ -11,24 +10,33 @@ const Info = () => {
     let [product, setProduct] = useState(null)
     let [loading, setLoading] = useState(true)
     let [error, setError] = useState(null)
-    let [rez, setrez] = useState(false)
-    let [rez1, setrez1] = useState(false)
-    let [rez2, setrez2] = useState(false)
-    let [rez3, setrez3] = useState(false)
+    let [selectedSize, setSelectedSize] = useState('M')
     let [count, setCount] = useState(1);
+    let [selectedImage, setSelectedImage] = useState(null)
+    const [randomThumbnails, setRandomThumbnails] = useState([])
 
-    const user = data.find((u) => String(u.id) === String(id));
+    const user = data?.find((u) => String(u.id) === String(id));
 
     useEffect(() => {
         if (user) {
             setProduct(user)
+            setSelectedImage(user.avatar)
             setLoading(false)
-        } else {
+        } else if (data) {
             setError('Product not found')
             setLoading(false)
         }
-    }, [user?.id])
+    }, [user?.id, data])
 
+    // Generate random thumbnails
+    useEffect(() => {
+        if (data && data.length > 0 && user) {
+            // Filter out current user's image and get random 6
+            const filteredData = data.filter(el => el.avatar !== user.avatar && el.id !== user.id);
+            const shuffled = [...filteredData].sort(() => Math.random() - 0.5);
+            setRandomThumbnails(shuffled.slice(0, 6));
+        }
+    }, [data, user?.id])
 
     const [heartItems, setHeartItems] = useState([]);
 
@@ -63,15 +71,17 @@ const Info = () => {
 
         refetch();
     }
+    
     useEffect(() => {
         const savedHeart = localStorage.getItem('Heart');
         if (savedHeart) {
             setHeartItems(JSON.parse(savedHeart));
         }
     }, [])
+
     const [Shop, setShop] = useState([]);
 
-    function ShopFunction(el) {
+    function ShopFunction(el, quantity = count) {
         const savedCart = JSON.parse(localStorage.getItem('Cart')) || [];
         const isAlreadyInCart = savedCart.find((item) => item.id === el.id);
 
@@ -89,7 +99,7 @@ const Info = () => {
                 data: el.data,
                 sku: el.sku,
                 status: el.status,
-                quantity: 1
+                quantity: quantity
             };
             updatedCart = [...savedCart, newItem];
         }
@@ -115,9 +125,6 @@ const Info = () => {
         return Shop.some(item => item.id === id);
     };
 
-
-
-
     if (loading) {
         return (
             <div className="flex justify-center items-center h-96">
@@ -126,121 +133,198 @@ const Info = () => {
         )
     }
 
-    if (error) {
+    if (error || !product) {
         return (
             <div className="text-center p-8">
-                <div className="text-red-500 text-xl mb-4">Error: {error}</div>
-                <button
-                    onClick={user}
-                    className="bg-[#46A358] text-white px-6 py-2 rounded-lg hover:bg-[#3a8a47]"
-                >
-                    Try Again
-                </button>
+                <div className="text-red-500 text-xl mb-4">Error: {error || 'Product not found'}</div>
+                <Link to="/">
+                    <button className="bg-[#46A358] text-white px-6 py-2 rounded-lg hover:bg-[#3a8a47] transition-colors">
+                        Go to Home
+                    </button>
+                </Link>
             </div>
         )
     }
 
-    if (!product) {
-        return (
-            <div className="text-center p-8">
-                <h2 className="text-2xl text-gray-600">Product not found</h2>
-            </div>
-        )
-    }
+    const sizes = ['S', 'M', 'L', 'XL'];
 
     return (
-        <div className="p-4">
-            <div>
-                <p className="mb-6">
-        <span className="font-bold text-[#46A358]">Home</span> / <span className="text-gray-600 font-medium">Info</span>
-      </p>
-                <div className='flex gap-4 w-[98%] justify-center overflow-x-auto scrollbar-hide bg-[#46A3581A] border border-[#46A358] rounded-xl p-2 mb-6'>
-                    {data.map((el)=>(
-                        <div key={el.id} className='flex-shrink-0 w-30   '>
-                            <img src={el.avatar} alt="" className='w-30 h-20 m-4 rounded-xl' />
+        <div className="min-h-screen bg-[#FBFBFB]">
+            <div className="max-w-7xl mx-auto px-4 py-8">
+               
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Left Side - Images */}
+                    <div className="lg:w-[60%]">
+                        {/* Main Image */}
+                        <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden mb-4 group">
+                            <img
+                                src={selectedImage || user.avatar}
+                                alt={user.name}
+                                className="w-full md:h-[600px] h-100 object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <div className="absolute top-4 right-4 flex gap-2">
+                                <button 
+                                    onClick={() => Liked(user)} 
+                                    className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
+                                        isInHeart(user.id) 
+                                            ? 'bg-[#46A358] text-white' 
+                                            : 'bg-white/90 text-gray-700 hover:bg-white'
+                                    }`}
+                                    title={isInHeart(user.id) ? 'Remove from favorites' : 'Add to favorites'}
+                                >
+                                    <FaHeart className="text-lg" />
+                                </button>
+                                <button 
+                                    onClick={() => ShopFunction(user)} 
+                                    className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
+                                        isInCart(user.id) 
+                                            ? 'bg-[#46A358] text-white' 
+                                            : 'bg-white/90 text-gray-700 hover:bg-white'
+                                    }`}
+                                    title={isInCart(user.id) ? 'Remove from cart' : 'Add to cart'}
+                                >
+                                    <FaShoppingCart className="text-lg" />
+                                </button>
+                            </div>
                         </div>
-                    ))}
-                </div>
-                <div className="flex  gap-4">
-                    <div className="w-[65%] relative overflow-hidden rounded-xl shadow-lg">
-                        <img
-                            src={user.avatar}
-                            alt={user.name}
-                            className="w-full h-120 object-cover"
-                        />
 
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                            <h2 className="text-3xl font-bold text-white mb-2">{user.name}</h2>
-                            <p className="text-white/90 line-clamp-2">{user.lorem || user.description}</p>
-                        </div>
-
-                        <div className="absolute top-4 right-4 flex gap-3">
-                            <button onClick={() => Liked(user)} className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill={isInHeart(user.id) ? "#46A358" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke={isInHeart(user.id) ? "#46A358" : "currentColor"} className="size-5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                                </svg>
-                            </button>
-
-                            <button onClick={() => ShopFunction(user)} className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill={isInCart(user.id) ? "#46A358" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke={isInCart(user.id) ? "#46A358" : "currentColor"} className="size-5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                </svg>
-                            </button>
-                        </div>
+                        {/* Thumbnail Gallery */}
+                        {data && data.length > 0 && randomThumbnails.length > 0 && (() => {
+                            const currentMainImage = selectedImage || user.avatar;
+                            const isMainImageSelected = !randomThumbnails.some(el => el.avatar === selectedImage);
+                            
+                            return (
+                                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                    {/* First thumbnail - current main image */}
+                                    <button
+                                        onClick={() => setSelectedImage(currentMainImage)}
+                                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                                            isMainImageSelected
+                                                ? 'border-[#46A358] ring-2 ring-[#46A358]/20'
+                                                : 'border-gray-200 hover:border-[#46A358]'
+                                        }`}
+                                    >
+                                        <img
+                                            src={currentMainImage}
+                                            alt="Main image"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </button>
+                                    {/* Random thumbnails */}
+                                    {randomThumbnails.map((el, index) => (
+                                        <button
+                                            key={el.id}
+                                            onClick={() => setSelectedImage(el.avatar)}
+                                            className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                                                selectedImage === el.avatar
+                                                    ? 'border-[#46A358] ring-2 ring-[#46A358]/20'
+                                                    : 'border-gray-200 hover:border-[#46A358]'
+                                            }`}
+                                        >
+                                            <img
+                                                src={el.avatar}
+                                                alt={`Thumbnail ${index + 1}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            );
+                        })()}
                     </div>
 
-                    <div className="w-[30%] ml-6 overflow-y-auto h-120 scrollbar-hide rounded-xl">
-                        {user && (
-                            <div className=" p-6 py-3 bg-[#46A3581A] rounded-xl shadow-sm">
-                                <h3 className="text-2xl font-bold mb-2">{user.name}</h3>
-                                <div className='flex justify-between items-center mb-4 border-b-2 border-[#46A358]'>
-                                    <span className="font-medium text-3xl text-[#46A358]">${user.prase}</span>
-                                    <div>
-                                        <Rate allowHalf defaultValue={3.5} />
-                                        <p className="text-gray-600">19 Customer Review</p>
+                    {/* Right Side - Product Info */}
+                    <div className="lg:w-[40%]">
+                        <div className="bg-white rounded-2xl shadow-lg p-8">
+                            {/* Product Name */}
+                            <h1 className="text-4xl font-bold text-gray-900 mb-4">{user.name}</h1>
+
+                            {/* Price and Rating */}
+                            <div className="flex items-center justify-between mb-6 pb-6 border-b-2 border-gray-100">
+                                <div>
+                                    <span className="text-4xl font-bold text-[#46A358]">${user.prase}</span>
+                                </div>
+                                <div className="text-right">
+                                    <Rate allowHalf defaultValue={4.5} disabled className="mb-2" />
+                                    <p className="text-sm text-gray-600">19 Customer Reviews</p>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div className="mb-6">
+                                <h3 className="text-lg font-bold text-gray-900 mb-3">Description</h3>
+                                <p className="text-gray-700 leading-relaxed line-clamp-4">
+                                    {user.lorem || 'This beautiful plant will bring life and freshness to your home. Perfect for indoor spaces and easy to care for.'}
+                                </p>
+                            </div>
+
+                            {/* Size Selection */}
+                                <div className="flex mb-5 items-center gap-3">
+                                <label className="block text-[13px] font-bold text-gray-700 mb-3">
+                                    Size:
+                                </label>
+                                    {sizes.map((size) => (
+                                        <button
+                                            key={size}
+                                            onClick={() => setSelectedSize(size)}
+                                            className={`w-12 h-12 rounded-lg font-semibold transition-all duration-200 ${
+                                                selectedSize === size
+                                                    ? 'bg-[#46A358] text-white shadow-lg scale-105'
+                                                    : 'bg-gray-100 text-gray-700 border-2 border-gray-200 hover:border-[#46A358] hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
+                                </div>
+
+                            {/* Product Details */}
+                            <div className="border-t pt-6 mb-6">
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center ">
+                                        <span className="text-gray-600 font-medium">SKU:</span>
+                                        <span className="font-semibold text-gray-900">{user.sku || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center ">
+                                        <span className="text-gray-600 font-medium">Category:</span>
+                                        <span className="font-semibold text-gray-900">Potter Plants</span>
+                                    </div>
+                                    <div className="flex justify-between items-center ">
+                                        <span className="text-gray-600 font-medium">Tags:</span>
+                                        <span className="font-semibold text-gray-900">Home, Garden, Plants</span>
                                     </div>
                                 </div>
-                                <div>
-                                    <h4 className="font-semibold text-lg mb-2 text-[#46A358]">Specifications</h4>
-                                    <p className="text-gray-700 font-serif">{user.lorem || 'No description available.'}</p>
-                                </div>
-                                <div className='flex gap-2 items-center my-2'>
-                                    <p className='font-bold'>Size:</p>
-                                    <button onClick={() => { setrez(!rez), setrez1(false), setrez2(false), setrez3(false) }} className={`${rez ? 'bg-[#46A358] text-white ' : "border-[#46A358] border-2"} w-8 h-8 cursor-pointer rounded-[50%]`}>S</button>
-                                    <button onClick={() => { setrez1(!rez1), setrez(false), setrez2(false), setrez3(false) }} className={`${rez1 ? 'bg-[#46A358] text-white ' : "border-[#46A358] border-2"} w-8 h-8 cursor-pointer rounded-[50%]`}>M</button>
-                                    <button onClick={() => { setrez2(!rez2), setrez(false), setrez1(false), setrez3(false) }} className={`${rez2 ? 'bg-[#46A358] text-white ' : "border-[#46A358] border-2"} w-8 h-8 cursor-pointer rounded-[50%]`}>L</button>
-                                    <button onClick={() => { setrez3(!rez3), setrez(false), setrez1(false), setrez2(false) }} className={`${rez3 ? 'bg-[#46A358] text-white ' : "border-[#46A358] border-2"} w-8 h-8 cursor-pointer rounded-[50%]`}>XL</button>
-                                </div>
-                                <div className='flex gap-2 items-center my-4'>
-                                    <button className='bg-[#46A358] bg-gradient-to-t from-white/60 text-white font-bold text-xl border w-10 h-10 cursor-pointer rounded-[50%]' onClick={() => setCount(count => Math.max(1, count - 1))} disabled={count <= 1}>-</button>
-                                    <button className=' border-1 w-20 h-10  rounded-xl'>{count}</button>
-                                    <button className='bg-[#46A358] bg-gradient-to-t from-white/60 text-white font-bold text-xl border w-10 h-10 cursor-pointer rounded-[50%]' onClick={() => setCount(count + 1)}>+</button>
-                                    <Link to={'/ToCard'}>
-                                        <button className='bg-[#46A358] bg-gradient-to-t from-white/60 text-white font-serif text-l border p-2 px-6 cursor-pointer rounded-xl'>Buy NOW</button>
-                                    </Link>
-                                </div>
-                                <div>
-                                    <p className='text-gray-500 flex justify-between'>SKU: <span className='font-medium text-black'> {user.sku}</span></p>
-                                    <p className='text-gray-500 flex justify-between'>Categories: <span className='font-medium text-black'>Potter Plants</span></p>
-                                    <p className='text-gray-500 flex justify-between'>Tags: <span className='font-medium text-black'> Home, Garden, Plants</span></p>
-                                    <div className='flex items-center  gap-2 my-2'>
-                                        <p className='font-serif text-xl'>Share this products:</p>
-                                        <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
+                            </div>
+
+                            {/* Share Section */}
+                            <div className="border-t pt-3">
+                                <div className="flex justify-between items-center gap-4">
+                                    <span className="text-gray-700 font-semibold">Share:</span>
+                                    <div className="flex gap-3">
+                                        <div
+                                            className="w-10 h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200"
+                                            title="Share on Facebook"
+                                        >
                                             <FaFacebookF />
                                         </div>
-                                        <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
+                                        <div
+                                            className="w-10 h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200"
+                                            title="Share on Instagram"
+                                        >
                                             <FaInstagram />
                                         </div>
-                                        <div className='border border-[#46A358] p-2 text-[#46A358] rounded-[7px] flex justify-center'>
+                                        <div
+                                            className="w-10 h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200"
+                                            title="Share on Twitter"
+                                        >
                                             <FaTwitter />
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
     )

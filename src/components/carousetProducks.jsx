@@ -42,7 +42,7 @@ const CarousetProducks = () => {
             >
                 {dataChunks.map((chunk, chunkIndex) => (
                     <div key={chunkIndex} className="px-4 mb-10">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                             {chunk.map((el) => (
                                 <div
                                     key={el.id}
@@ -56,7 +56,7 @@ const CarousetProducks = () => {
                                     <img
                                         src={el.avatar}
                                         alt={el.name}
-                                        className="w-full h-40 object-cover rounded-lg mb-3"
+                                        className="w-full md:h-40 h-20 object-cover rounded-lg mb-3"
                                     />
                                     <h3 className="font-semibold text-lg truncate">{el.name}</h3>
                                     <p className="text-[#46A358] font-medium text-xl">${el.prase}</p>
