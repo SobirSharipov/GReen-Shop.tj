@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import CarousetProducks from '../../components/carousetProducks';
 import { Link } from 'react-router';
 import ModalAddres from '../../components/modalAddres';
-import logo1 from '../../assets/Logo1.svg'
 import PaymentMethod from '../../components/PaymentMethod';
 
 const ToCard = () => {
