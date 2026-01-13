@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router'
 import logo from '../../assets/Logo.svg'
-import logo1 from '../../assets/Logo1.svg'
+import logo1 from '../../assets/logo1.svg'
 import { useGetUsersQuery } from '../../services/UserApi';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa6";
 import { Spin } from 'antd';
