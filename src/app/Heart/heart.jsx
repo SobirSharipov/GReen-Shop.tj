@@ -101,7 +101,7 @@ const Heart = () => {
                 className="w-full h-40 object-cover group-hover:brightness-75 transition-all duration-300"
               />
 
-              <div className="absolute inset-0 flex items-center justify-center gap-3  opacity-0 group-hover:opacity-100  transition-opacity duration-300 bg-black/20">
+              <div className="absolute inset-0 flex items-center justify-center gap-3    transition-opacity duration-300 bg-black/20">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
