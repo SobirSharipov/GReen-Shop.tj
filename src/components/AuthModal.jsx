@@ -242,3 +242,4 @@ const AuthModal = ({ isOpen, onClose, onRegisterSuccess }) => {
 
 export default AuthModal;
 
+

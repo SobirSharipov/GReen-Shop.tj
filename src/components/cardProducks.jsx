@@ -105,7 +105,7 @@ const CardProducks = () => {
 
 
     return (
-        <div>
+        <div style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
             <div className='hidden md:flex  gap-5 my-10'>
                 {data.slice(46, 48).map((el) => (
                     <div key={el.id} className='relative overflow-hidden rounded-xl group flex gap-4 w-full bg-[#FBFBFB]'>
@@ -114,11 +114,11 @@ const CardProducks = () => {
                             alt="img"
                             className='w-[40%] h-70 object-cover group-hover:brightness-75 transition-all duration-300' />
                         <div className='relative w-[60%] px-5 py-3'>
-                            <p className='font-black md:text-2xl'>{truncateText(el.name, 23)}</p>
-                            <p className='md:font-serif text-gray-700 md:text-l my-4'>{truncateText(el.lorem, 200)}</p>
+                            <p className='font-black md:text-2xl' style={{ fontFamily: 'Inter-ExtraBold, sans-serif' }}>{truncateText(el.name, 23)}</p>
+                            <p className='md:font-serif text-gray-700 md:text-l my-4' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>{truncateText(el.lorem, 200)}</p>
                             <div className='absolute bottom-4 right-4'>
                                 <Link to={`/info/${el.id}`}>
-                                    <button className='flex gap-4 items-center cursor-pointer bg-[#46A358] text-white font-serif md:text-xl p-2 px-6 rounded-[8px] hover:bg-[#3a8a47] transition-colors'>
+                                    <button className='flex gap-4 items-center cursor-pointer bg-[#46A358] text-white font-serif md:text-xl p-2 px-6 rounded-[8px] hover:bg-[#3a8a47] transition-colors' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
                                         Find More
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -132,8 +132,8 @@ const CardProducks = () => {
             </div>
             <div>
                 <div className=' text-center mt-15 mb-10'>
-                    <p className='font-bold text-4xl'>Our Blog Posts</p>
-                    <p className='font-serif'> We are an online plant shop offering a wide range of cheap and trendy plants. </p>
+                    <p className='font-bold text-4xl' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Our Blog Posts</p>
+                    <p className='font-serif' style={{ fontFamily: 'Inter-Regular, sans-serif' }}> We are an online plant shop offering a wide range of cheap and trendy plants. </p>
                 </div>
 
                 <div className='grid md:grid-cols-4 gap-8 my-5'>
@@ -144,7 +144,7 @@ const CardProducks = () => {
                                 alt="img"
                                 className='w-full h-60 object-cover group-hover:brightness-75 transition-all duration-300' />
                             <div className='absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                                  flex gap-3 opacity-0 group-hover:opacity-100 
+                                  flex gap-3  
                                   transition-opacity duration-300'>
                                 <button onClick={() => Liked(el)} className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill={isInHeart(el.id) ? "#46A358" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke={isInHeart(el.id) ? "#46A358" : "currentColor"} className="size-5">
@@ -159,11 +159,11 @@ const CardProducks = () => {
                                 </button>
                             </div>
                             <div className='bg-[#FBFBFB] p-4 rounded-b-xl'>
-                                <p className='font-mono text-xl text-[#46A358]'>{el.data}</p>
-                                <p className='font-bold text-2xl'>{truncateText(el.name, 20)}</p>
-                                <p className='font-serif text-l line-clamp-2 my-2'>{truncateText(el.lorem, 100)}</p>
+                                <p className='font-mono text-xl text-[#46A358]' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>{el.data}</p>
+                                <p className='font-bold text-2xl' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{truncateText(el.name, 20)}</p>
+                                <p className='font-serif text-l line-clamp-2 my-2' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>{truncateText(el.lorem, 100)}</p>
                                 <Link to={`/info/${el.id}`}>
-                                    <button className='font-serif flex gap-4 items-center text-xl hover:text-[#46A358]'>Read More
+                                    <button className='font-serif flex gap-4 items-center text-xl hover:text-[#46A358]' style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Read More
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
                                         </svg>

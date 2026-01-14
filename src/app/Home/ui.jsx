@@ -301,24 +301,25 @@ const Home = () => {
   }
 
   if (error) {
-    return <div className="text-center text-red-500">Error loading data</div>;
+    return <div className="text-center text-red-500" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Error loading data</div>;
   }
 
   return (
-    <div>
+    <div style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
       <CarouselANT />
       <div className='flex flex-col md:flex-row gap-8 justify-between items-start my-8'>
         {/* Sidebar - Hidden on mobile */}
         <div className='hidden md:block bg-[#FBFBFB] w-[30%]'>
           <div className='p-4 '>
-            <p className='font-bold text-black text-2xl'>Categories</p>
+            <p className='font-bold text-black text-2xl' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Categories</p>
             <button
               onClick={() => setSelectedCategory('all')}
                 className={`w-full flex justify-between my-3 text-left hover:text-[#46A358] transition-colors ${
                 selectedCategory === 'all' ? 'text-[#46A358] font-black' : ''
               }`}
+              style={{ fontFamily: selectedCategory === 'all' ? 'Inter-ExtraBold, sans-serif' : 'Inter-Medium, sans-serif' }}
             >
-              All Products <span className='font-medium'>({allData?.length || 0})</span>
+              All Products <span className='font-medium' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>({allData?.length || 0})</span>
             </button>
             {categories.map((category, index) => (
               <button
@@ -327,12 +328,13 @@ const Home = () => {
                 className={`w-full flex justify-between my-3 text-left hover:text-[#46A358] transition-colors ${
                 selectedCategory === category.name ? 'text-[#46A358] font-black' : ''
               }`}
+                style={{ fontFamily: selectedCategory === category.name ? 'Inter-ExtraBold, sans-serif' : 'Inter-Medium, sans-serif' }}
               >
-                {category.name} <span className='font-medium'>({category.count})</span>
+                {category.name} <span className='font-medium' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>({category.count})</span>
               </button>
             ))}
             
-            <p className='font-bold text-black text-2xl mt-5'>Price Range</p>
+            <p className='font-bold text-black text-2xl mt-5' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Price Range</p>
             <Slider
               range
               min={minMaxPrice[0]}
@@ -347,7 +349,7 @@ const Home = () => {
             />
             <div className='flex gap-2 mt-4'>
               <div className='flex-1'>
-                <label className='text-sm text-gray-600 mb-1 block'>Min Price</label>
+                <label className='text-sm text-gray-600 mb-1 block' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Min Price</label>
                 <input
                   type='number'
                   value={minPriceInput}
@@ -380,10 +382,11 @@ const Home = () => {
                   }}
                   className='w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#46A358] focus:outline-none transition-colors'
                   placeholder='0'
+                  style={{ fontFamily: 'Inter-Regular, sans-serif' }}
                 />
               </div>
               <div className='flex-1'>
-                <label className='text-sm text-gray-600 mb-1 block'>Max Price</label>
+                <label className='text-sm text-gray-600 mb-1 block' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Max Price</label>
                 <input
                   type='number'
                   value={maxPriceInput}
@@ -416,19 +419,21 @@ const Home = () => {
                   }}
                   className='w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#46A358] focus:outline-none transition-colors'
                   placeholder='0'
+                  style={{ fontFamily: 'Inter-Regular, sans-serif' }}
                 />
               </div>
             </div>
-            <p className='font-bold text-xl mt-3'>Price: <span className='text-[#46A358]'> ${priceRange[0]} - ${priceRange[1]}</span></p>
+            <p className='font-bold text-xl mt-3' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Price: <span className='text-[#46A358]' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}> ${priceRange[0]} - ${priceRange[1]}</span></p>
             
-            <p className='font-bold text-black text-2xl mt-5'>Size</p>
+            <p className='font-bold text-black text-2xl mt-5' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Size</p>
             <button
               onClick={() => setSelectedSize('all')}
               className={`w-full flex justify-between my-3 text-left hover:text-[#46A358] transition-colors ${
                 selectedSize === 'all' ? 'text-[#46A358] font-black' : ''
               }`}
+              style={{ fontFamily: selectedSize === 'all' ? 'Inter-ExtraBold, sans-serif' : 'Inter-Medium, sans-serif' }}
             >
-              All Sizes <span className='font-medium'>({allData?.length || 0})</span>
+              All Sizes <span className='font-medium' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>({allData?.length || 0})</span>
             </button>
             {sizes.map((size, index) => (
               <button
@@ -437,8 +442,9 @@ const Home = () => {
                 className={`w-full flex justify-between my-3 text-left hover:text-[#46A358] transition-colors ${
                   selectedSize === size.name ? 'text-[#46A358] font-black' : ''
                 }`}
+                style={{ fontFamily: selectedSize === size.name ? 'Inter-ExtraBold, sans-serif' : 'Inter-Medium, sans-serif' }}
               >
-                {size.name} <span className='font-medium'>({size.count})</span>
+                {size.name} <span className='font-medium' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>({size.count})</span>
               </button>
             ))}
 
@@ -459,6 +465,7 @@ const Home = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className='w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#46A358] focus:outline-none transition-colors text-lg'
+                style={{ fontFamily: 'Inter-Regular, sans-serif' }}
               />
             </div>
           </div>
@@ -474,6 +481,7 @@ const Home = () => {
                     ? 'text-[#46A358] border-[#46A358]'
                     : 'text-gray-700 border-transparent hover:text-[#46A358] hover:border-[#46A358]'
                 }`}
+                style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
               >
                 All Plants
               </button>
@@ -484,6 +492,7 @@ const Home = () => {
                     ? 'text-[#46A358] border-[#46A358]'
                     : 'text-gray-700 border-transparent hover:text-[#46A358] hover:border-[#46A358]'
                 }`}
+                style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
               >
                 New Arrivals
               </button>
@@ -494,16 +503,18 @@ const Home = () => {
                     ? 'text-[#46A358] border-[#46A358]'
                     : 'text-gray-700 border-transparent hover:text-[#46A358] hover:border-[#46A358]'
                 }`}
+                style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
               >
                 Sale
               </button>
             </div>
             <div className='hidden md:flex gap-4 items-center'>
-              <p className='font-medium text-lg text-gray-700 whitespace-nowrap'>Sort by:</p>
+              <p className='font-medium text-lg text-gray-700 whitespace-nowrap' style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Sort by:</p>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className='font-medium text-lg text-gray-700 border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-[#46A358] focus:outline-none transition-colors cursor-pointer'
+                style={{ fontFamily: 'Inter-Medium, sans-serif' }}
               >
                 <option value='default'>Default sorting</option>
                 <option value='price-low'>Price: Low to High</option>
@@ -534,7 +545,7 @@ const Home = () => {
                       className='w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500' />
                     {/* Discount Badge */}
                     {discountPercent && (
-                      <div className='absolute top-2 left-2 bg-[#46A358] text-white px-2 py-1 rounded text-xs md:text-sm font-bold'>
+                      <div className='absolute top-2 left-2 bg-[#46A358] text-white px-2 py-1 rounded text-xs md:text-sm font-bold' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
                         {discountPercent}% OFF
                       </div>
                     )}
@@ -572,8 +583,8 @@ const Home = () => {
                     
                   </div>
                   <div className='bg-white p-3 md:p-5 rounded-b-lg md:rounded-b-xl'>
-                    <h3 className='font-semibold text-sm md:text-lg text-gray-800 mb-1 md:mb-2 line-clamp-1'>{el.name}</h3>
-                    <p className='font-bold text-lg md:text-2xl text-[#46A358]'>${el.prase}</p>
+                    <h3 className='font-semibold text-sm md:text-lg text-gray-800 mb-1 md:mb-2 line-clamp-1' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>{el.name}</h3>
+                    <p className='font-bold text-lg md:text-2xl text-[#46A358]' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>${el.prase}</p>
                   </div>
                 </div>
                 );
@@ -582,8 +593,8 @@ const Home = () => {
           ) : (
             <div className='text-center py-20'>
               <div className='text-6xl mb-4'>🌱</div>
-              <h3 className='text-2xl font-bold text-gray-800 mb-2'>No products found</h3>
-              <p className='text-gray-600'>
+              <h3 className='text-2xl font-bold text-gray-800 mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>No products found</h3>
+              <p className='text-gray-600' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                 {searchQuery ? `No products match your search "${searchQuery}"` : 'Try adjusting your filters'}
               </p>
               {(searchQuery || productType !== 'all' || selectedCategory !== 'all') && (
@@ -595,6 +606,7 @@ const Home = () => {
                     setSelectedSize('all');
                   }}
                   className='mt-4 bg-[#46A358] text-white px-6 py-2 rounded-lg hover:bg-[#3a8a47] transition-colors'
+                  style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
                 >
                   Clear Filters
                 </button>

@@ -127,7 +127,7 @@ const Plant = () => {
   const activeCategoryData = careCategories.find(cat => cat.id === activeCategory)
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB]">
+    <div className="min-h-screen bg-[#FBFBFB]" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-gray-900  to-black rounded-2xl py-20 px-4 relative overflow-hidden">
         {/* Background decorative elements */}
@@ -144,16 +144,16 @@ const Plant = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+              <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
                 Plant Care Guide
               </h1>
-              <p className="text-xl md:text-2xl text-green-50 max-w-3xl mb-6 drop-shadow-md">
+              <p className="text-xl md:text-2xl text-green-50 max-w-3xl mb-6 drop-shadow-md" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>
                 Learn how to keep your plants healthy and thriving with our comprehensive care guides
               </p>
               
               {/* Additional Information */}
               <div className="space-y-4 mb-6">
-                <p className="text-lg text-green-100 max-w-2xl">
+                <p className="text-lg text-green-100 max-w-2xl" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                   Master the art of plant care with expert tips, step-by-step guides, and proven techniques. 
                   Whether you're a beginner or experienced gardener, find everything you need to nurture your green companions.
                 </p>
@@ -162,19 +162,19 @@ const Plant = () => {
                 <div className="hidden md:flex flex-wrap gap-4 mt-6">
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Step-by-Step Guides</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Step-by-Step Guides</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Expert Tips</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Expert Tips</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Problem Solutions</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Problem Solutions</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Seasonal Care</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Seasonal Care</span>
                   </div>
                 </div>
               </div>
@@ -200,8 +200,8 @@ const Plant = () => {
                   <FaClipboardList className="text-2xl text-white" />
                 </div>
                 <div className='md:block flex gap-2 mt-2'>
-                  <div className="text-3xl font-bold text-white">{careCategories.length}</div>
-                  <div className="text-green-100 text-sm font-medium">Care Categories</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{careCategories.length}</div>
+                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Care Categories</div>
                 </div>
               </div>
             </div>
@@ -212,8 +212,8 @@ const Plant = () => {
                   <FaLightbulb className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">50+</div>
-                  <div className="text-green-100 text-sm font-medium">Expert Tips</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50+</div>
+                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Expert Tips</div>
                 </div>
               </div>
             </div>
@@ -224,8 +224,8 @@ const Plant = () => {
                   <FaBook className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">100+</div>
-                  <div className="text-green-100 text-sm font-medium">Care Guides</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>100+</div>
+                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Care Guides</div>
                 </div>
               </div>
             </div>
@@ -236,8 +236,8 @@ const Plant = () => {
                   <FaUsers className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">25K+</div>
-                  <div className="text-green-100 text-sm font-medium">Happy Gardeners</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>25K+</div>
+                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Happy Gardeners</div>
                 </div>
               </div>
             </div>
@@ -249,7 +249,7 @@ const Plant = () => {
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Category Selection */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
             Care Categories
           </h2>
           <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -269,7 +269,9 @@ const Plant = () => {
                   </div>
                   <p className={`font-semibold text-sm md:text-base ${
                     activeCategory === category.id ? '' : 'text-gray-700'
-                  }`}>
+                  }`}
+                  style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
+                  >
                     {category.title}
                   </p>
                 </div>
@@ -285,7 +287,7 @@ const Plant = () => {
               <div className={`${activeCategoryData.color} p-4 rounded-xl`}>
                 {activeCategoryData.icon}
               </div>
-              <h3 className="md:text-3xl text-2xl font-bold text-gray-800">
+              <h3 className="md:text-3xl text-2xl font-bold text-gray-800" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
                 {activeCategoryData.title} Tips
               </h3>
             </div>
@@ -296,7 +298,7 @@ const Plant = () => {
                   className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <FaCheckCircle className="text-[#46A358] text-xl mt-1 flex-shrink-0" />
-                  <p className="text-gray-700 text-lg">{tip}</p>
+                  <p className="text-gray-700 text-lg" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>{tip}</p>
                 </div>
               ))}
             </div>
@@ -305,7 +307,7 @@ const Plant = () => {
 
         {/* Quick Tips Section */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
             Quick Care Tips
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -315,10 +317,10 @@ const Plant = () => {
                 className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               >
                 <div className="text-4xl mb-4">{tip.icon}</div>
-                <h4 className="text-xl font-bold text-gray-800 mb-2">
+                <h4 className="text-xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
                   {tip.title}
                 </h4>
-                <p className="text-gray-600">{tip.description}</p>
+                <p className="text-gray-600" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>{tip.description}</p>
               </div>
             ))}
           </div>
@@ -326,7 +328,7 @@ const Plant = () => {
 
         {/* Essential Care Guide */}
         <div className="bg-gradient-to-br from-[#46A358] to-[#3a8a47] rounded-2xl shadow-xl p-8 md:p-12 text-white mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
             Essential Plant Care Checklist
           </h2>
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -335,8 +337,8 @@ const Plant = () => {
                 <FaCheckCircle className="text-2xl" />
               </div>
               <div>
-                <h4 className="font-bold text-xl mb-2">Weekly Tasks</h4>
-                <ul className="space-y-2 text-green-100">
+                <h4 className="font-bold text-xl mb-2" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Weekly Tasks</h4>
+                <ul className="space-y-2 text-green-100" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                   <li>• Check soil moisture levels</li>
                   <li>• Inspect for pests and diseases</li>
                   <li>• Remove dead or yellowing leaves</li>
@@ -349,8 +351,8 @@ const Plant = () => {
                 <FaCheckCircle className="text-2xl" />
               </div>
               <div>
-                <h4 className="font-bold text-xl mb-2">Monthly Tasks</h4>
-                <ul className="space-y-2 text-green-100">
+                <h4 className="font-bold text-xl mb-2" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Monthly Tasks</h4>
+                <ul className="space-y-2 text-green-100" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                   <li>• Clean leaves with damp cloth</li>
                   <li>• Fertilize during growing season</li>
                   <li>• Check for root-bound plants</li>
@@ -363,16 +365,17 @@ const Plant = () => {
 
         {/* Call to Action */}
         <div className="text-center bg-white rounded-2xl shadow-lg p-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">
+          <h3 className="text-2xl font-bold text-gray-800 mb-4" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
             Need More Help?
           </h3>
-          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
             Explore our shop to find the perfect plants for your home, or check out our blogs for more detailed care guides and plant inspiration.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               to="/Shop"
               className="bg-[#46A358] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#3a8a47] transition-colors flex items-center gap-2"
+              style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
             >
               Shop Plants
               <FaArrowRight />
@@ -380,6 +383,7 @@ const Plant = () => {
             <Link
               to="/Blogs"
               className="border-2 border-[#46A358] text-[#46A358] px-8 py-3 rounded-lg font-semibold hover:bg-[#46A358] hover:text-white transition-colors flex items-center gap-2"
+              style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
             >
               Read Blogs
               <FaArrowRight />

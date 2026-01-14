@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router';
 
 const Heart = () => {
   let [getHeart, setHeart] = useState([])
@@ -125,6 +126,7 @@ const Heart = () => {
                   </svg>
                 </button>
 
+                  <Link to={`/info/${el.id}`}>
                 <button
                   className="bg-white p-3 rounded-full shadow-lg cursor-pointer hover:bg-gray-100 transition-colors"
                   title="View details"
@@ -134,6 +136,7 @@ const Heart = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                   </svg>
                 </button>
+                  </Link>
               </div>
             </div>
 

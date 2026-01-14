@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router'
 import logo from '../../assets/Logo.svg'
+import logo2 from '../../../public/Vector.svg'
 import logo1 from '../../assets/logo1.svg'
 import { useGetUsersQuery } from '../../services/UserApi';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa6";
 import { Spin } from 'antd';
 import AuthModal from '../../components/AuthModal';
 import MobileDrawer from '../../components/Drawer';
+import TextType from '../../components/TextType'
 
 const Layout = () => {
   const { data, isLoading, error } = useGetUsersQuery();
@@ -76,7 +78,7 @@ const Layout = () => {
 
     // Check authentication status on mount
     setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
-    
+
     // Load user photo
     const userData = localStorage.getItem('user');
     if (userData) {
@@ -156,8 +158,16 @@ const Layout = () => {
     return (
 
       <div >
-        <div className='flex justify-center items-center mt-20'>
-          <img src={logo} alt="" className='w-[20%]' />
+        <div className='flex justify-center gap-4 items-center mt-20'>
+          <img src={logo2} alt="" className='' />
+          <TextType
+            text={["Welcome to GreenShop"]}
+            typingSpeed={75}
+            className=' text-xl md:text-2xl text-[#46A358] font-bold uppercase tracking-wider mb-2'
+            pauseDuration={1500}
+            showCursor={true}
+            cursorCharacter="|"
+          />
         </div>
         <div className="flex justify-center items-center mt-10 ">
           <Spin size="large" />
@@ -167,16 +177,16 @@ const Layout = () => {
   }
 
   if (error) {
-    return <div className="p-4 text-center text-red-500">Error loading data</div>;
+    return <div className="p-4 text-center text-red-500" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Error loading data</div>;
   }
 
   return (
-    <div className='p-[10px]'>
+    <div className='p-[10px]' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
       <header>
         <div className='flex justify-between items-center border-b-2 border-[#46A35880] pb-[10px]'>
           {/* Mobile: Logo + Drawer Button */}
           <div className='flex items-center gap-3 md:hidden'>
-            <MobileDrawer 
+            <MobileDrawer
               isAuthenticated={isAuthenticated}
               userPhoto={userPhoto}
               getHeart={getHeart}
@@ -184,7 +194,7 @@ const Layout = () => {
               onUserClick={handleUserIconClick}
             />
             <Link to={'/'}>
-            <img src={logo} alt="Logo" className="h-8" />
+              <img src={logo} alt="Logo" className="h-8" />
             </Link>
           </div>
 
@@ -196,22 +206,26 @@ const Layout = () => {
           {/* Desktop: Navigation Links */}
           <div className='hidden md:flex gap-15'>
             <Link to={'/'}>
-              <p className={`${isActive('/') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}>
+              <p className={`${isActive('/') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
+                style={{ fontFamily: isActive('/') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}>
                 Home
               </p>
             </Link>
             <Link to={'/Shop'}>
-              <p className={`${isActive('/Shop') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}>
+              <p className={`${isActive('/Shop') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
+                style={{ fontFamily: isActive('/Shop') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}>
                 Shop
               </p>
             </Link>
             <Link to={'/Plant Care'}>
-              <p className={`${isActive('/Plant%20Care') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}>
+              <p className={`${isActive('/Plant%20Care') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
+                style={{ fontFamily: isActive('/Plant%20Care') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}>
                 Plant Care
               </p>
             </Link>
             <Link to={'/Blogs'}>
-              <p className={`${isActive('/Blogs') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}>
+              <p className={`${isActive('/Blogs') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
+                style={{ fontFamily: isActive('/Blogs') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}>
                 Blogs
               </p>
             </Link>
@@ -233,7 +247,7 @@ const Layout = () => {
               </button>
 
               {getHeart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#46A358] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-[#46A358] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" style={{ fontFamily: 'Inter-Bold, sans-serif' }}>
                   {getHeart.length}
                 </span>
               )}
@@ -252,14 +266,14 @@ const Layout = () => {
               </button>
 
               {getCart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#46A358] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-[#46A358] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" style={{ fontFamily: 'Inter-Bold, sans-serif' }}>
                   {getCart.length}
                 </span>
               )}
             </Link>
 
             {isAuthenticated ? (
-              <button 
+              <button
                 onClick={handleUserIconClick}
                 className="p-0 rounded-full transition-all hover:ring-2 hover:ring-[#46A358]/20 ring-2 ring-[#46A358]/30"
                 title="My Profile"
@@ -277,9 +291,10 @@ const Layout = () => {
                 )}
               </button>
             ) : (
-              <button 
+              <button
                 onClick={handleUserIconClick}
                 className="hidden mdflex gap-2 items-center py-2 px-6 bg-[#46A358] text-white rounded-[10px] hover:bg-[#3a8a47] transition-colors"
+                style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
@@ -293,8 +308,8 @@ const Layout = () => {
       <main className='mt-3'>
         <Outlet />
       </main>
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onRegisterSuccess={handleAuthSuccess}
       />
@@ -310,20 +325,20 @@ const Layout = () => {
                     alt="img"
                     className='w-full h-50 object-cover group-hover:brightness-75 transition-all duration-300' />
                   <div className='bg-[#FBFBFB] p-4 py-2 rounded-b-xl'>
-                    <p className='font-serif text-lg md:text-2xl'>{el.name}</p>
-                    <p className='font-serif text-sm md:text-l line-clamp-2 my-2'>${el.lorem}</p>
+                    <p className='font-serif text-lg md:text-2xl' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{el.name}</p>
+                    <p className='font-serif text-sm md:text-l line-clamp-2 my-2' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>${el.lorem}</p>
                   </div>
                 </div>
               )
             ))}
           </div>
           <div className='w-full md:w-[30%]'>
-            <p className='font-serif mb-3 text-lg md:text-2xl'>Would you like to join newsletters?</p>
+            <p className='font-serif mb-3 text-lg md:text-2xl' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Would you like to join newsletters?</p>
             <div className='flex border-[#46A358] border rounded-xl' >
-              <input type="text" placeholder='enter your email address...' className='border-none w-full p-2 text-sm md:text-base' />
-              <button className='p-2 px-4 md:px-7 rounded-r-xl bg-[#46A358] text-white font-serif text-base md:text-2xl whitespace-nowrap'>Join</button>
+              <input type="text" placeholder='enter your email address...' className='border-none w-full p-2 text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }} />
+              <button className='p-2 px-4 md:px-7 rounded-r-xl bg-[#46A358] text-white font-serif text-base md:text-2xl whitespace-nowrap' style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Join</button>
             </div>
-            <p className='font-serif text-sm md:text-l mt-3 md:mt-5'>We usually post offers and challenges in newsletter. We're your online houseplant destination. We offer a wide range of houseplants and accessories shipped directly from our (green)house to yours! </p>
+            <p className='font-serif text-sm md:text-l mt-3 md:mt-5' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>We usually post offers and challenges in newsletter. We're your online houseplant destination. We offer a wide range of houseplants and accessories shipped directly from our (green)house to yours! </p>
           </div>
         </div>
 
@@ -339,7 +354,7 @@ const Layout = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
               </svg>
             </button>
-            <p className='font-serif text-sm md:text-l'>70 West Buckingham Ave. <br />
+            <p className='font-serif text-sm md:text-l' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>70 West Buckingham Ave. <br />
               Farmingdale, NY 11735</p>
           </div>
           <div className='hidden md:flex flex-col sm:flex-row gap-2 items-start sm:items-center'>
@@ -348,7 +363,7 @@ const Layout = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
               </svg>
             </button>
-            <p className='font-serif text-sm md:text-l break-all'>contact@greenshop.com</p>
+            <p className='font-serif text-sm md:text-l break-all' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>contact@greenshop.com</p>
           </div>
           <div className='hidden md:flex flex-col sm:flex-row gap-2 items-start sm:items-center'>
             <button className='text-[#46A358] flex-shrink-0'>
@@ -356,44 +371,44 @@ const Layout = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 3.75v4.5m0-4.5h-4.5m4.5 0-6 6m3 12c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
               </svg>
             </button>
-            <p className='font-serif text-sm md:text-l'>+88 01911 717 490</p>
+            <p className='font-serif text-sm md:text-l' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>+88 01911 717 490</p>
           </div>
         </div>
 
         {/* Links Section */}
         <div className='grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-0 my-5'>
           <div className='mb-4 md:mb-0'>
-            <p className='font-bold text-lg md:text-2xl mb-2'>My Account</p>
+            <p className='font-bold text-lg md:text-2xl mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>My Account</p>
             <div className='space-y-1'>
-              <p className='font-serif text-sm md:text-base'>My Account</p>
-              <p className='font-serif text-sm md:text-base'>Our stores</p>
-              <p className='font-serif text-sm md:text-base'>Contact us</p>
-              <p className='font-serif text-sm md:text-base'>Career</p>
-              <p className='font-serif text-sm md:text-base'>Specials</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>My Account</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Our stores</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Contact us</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Career</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Specials</p>
             </div>
           </div>
           <div className='mb-4 md:mb-0'>
-            <p className='font-bold text-lg md:text-2xl mb-2'>Help & Guide</p>
+            <p className='font-bold text-lg md:text-2xl mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Help & Guide</p>
             <div className='space-y-1'>
-              <p className='font-serif text-sm md:text-base'>Help Center</p>
-              <p className='font-serif text-sm md:text-base'>How to Buy</p>
-              <p className='font-serif text-sm md:text-base'>Shipping & Delivery</p>
-              <p className='font-serif text-sm md:text-base'>Product Policy</p>
-              <p className='font-serif text-sm md:text-base'>How to Return</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Help Center</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>How to Buy</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Shipping & Delivery</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Product Policy</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>How to Return</p>
             </div>
           </div>
           <div className='mb-4 md:mb-0'>
-            <p className='font-bold text-lg md:text-2xl mb-2'>Categories</p>
+            <p className='font-bold text-lg md:text-2xl mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Categories</p>
             <div className='space-y-1'>
-              <p className='font-serif text-sm md:text-base'>House Plants</p>
-              <p className='font-serif text-sm md:text-base'>Potter Plants</p>
-              <p className='font-serif text-sm md:text-base'>Seeds</p>
-              <p className='font-serif text-sm md:text-base'>Small Plants</p>
-              <p className='font-serif text-sm md:text-base'>Accessories</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>House Plants</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Potter Plants</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Seeds</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Small Plants</p>
+              <p className='font-serif text-sm md:text-base' style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Accessories</p>
             </div>
           </div>
           <div className='mb-4 md:mb-0'>
-            <p className='font-bold text-lg md:text-2xl mb-2'>Social Media</p>
+            <p className='font-bold text-lg md:text-2xl mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Social Media</p>
             <div className='flex gap-2 my-2'>
               <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
                 <FaFacebookF className="w-4 h-4 md:w-5 md:h-5" />
@@ -411,7 +426,7 @@ const Layout = () => {
                 <FaYoutube className="w-4 h-4 md:w-5 md:h-5" />
               </div>
             </div>
-            <p className='font-bold text-lg md:text-2xl mt-4 mb-2'>We accept</p>
+            <p className='font-bold text-lg md:text-2xl mt-4 mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>We accept</p>
             <img src={logo1} alt="" className='w-32 md:w-auto' />
           </div>
         </div>

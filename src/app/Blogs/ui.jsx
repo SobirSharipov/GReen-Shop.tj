@@ -126,14 +126,14 @@ const Blogs = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-500 py-20">
+      <div className="text-center text-red-500 py-20" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
         Error loading blogs. Please try again later.
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB]">
+    <div className="min-h-screen bg-[#FBFBFB]" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-[#46A358] via-[#3a8a47] to-[#2d6e3a] rounded-2xl py-20 px-4 relative overflow-hidden">
         {/* Background decorative elements */}
@@ -152,16 +152,16 @@ const Blogs = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+              <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
                 Our Blog
               </h1>
-              <p className="text-xl md:text-2xl text-green-50 max-w-3xl mb-6 drop-shadow-md">
+              <p className="text-xl md:text-2xl text-green-50 max-w-3xl mb-6 drop-shadow-md" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>
                 Discover expert tips, plant care guides, and inspiring stories to help your plants thrive
               </p>
               
               {/* Additional Information */}
               <div className="space-y-4 mb-6">
-                <p className="text-lg text-green-100 max-w-2xl">
+                <p className="text-lg text-green-100 max-w-2xl" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                   Join our community of plant enthusiasts and learn from experienced gardeners. 
                   Get access to exclusive content, seasonal guides, and personalized care recommendations.
                 </p>
@@ -170,15 +170,15 @@ const Blogs = () => {
                 <div className="flex flex-wrap gap-4 mt-6">
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Expert Guides</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Expert Guides</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Seasonal Tips</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Seasonal Tips</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
                     <FaCheckCircle className="text-green-200" />
-                    <span className="text-white text-sm font-medium">Community Support</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>Community Support</span>
                   </div>
                 </div>
               </div>
@@ -204,8 +204,8 @@ const Blogs = () => {
                   <FaBook className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">{allData?.length || 0}+</div>
-                  <div className="text-green-100 text-sm">Blog Posts</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{allData?.length || 0}+</div>
+                  <div className="text-green-100 text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Blog Posts</div>
                 </div>
               </div>
             </div>
@@ -216,8 +216,8 @@ const Blogs = () => {
                   <FaUsers className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">15+</div>
-                  <div className="text-green-100 text-sm">Expert Authors</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>15+</div>
+                  <div className="text-green-100 text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Expert Authors</div>
                 </div>
               </div>
             </div>
@@ -228,8 +228,8 @@ const Blogs = () => {
                   <FaTag className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">5+</div>
-                  <div className="text-green-100 text-sm">Categories</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>5+</div>
+                  <div className="text-green-100 text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Categories</div>
                 </div>
               </div>
             </div>
@@ -240,8 +240,8 @@ const Blogs = () => {
                   <FaLeaf className="text-2xl text-white" />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white">50K+</div>
-                  <div className="text-green-100  text-sm">Monthly Readers</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50K+</div>
+                  <div className="text-green-100  text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Monthly Readers</div>
                 </div>
               </div>
             </div>
@@ -266,6 +266,7 @@ const Blogs = () => {
                   setCurrentPage(1)
                 }}
                 className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#46A358] focus:outline-none transition-colors"
+                style={{ fontFamily: 'Inter-Regular, sans-serif' }}
               />
             </div>
 
@@ -283,9 +284,10 @@ const Blogs = () => {
                       ? 'bg-[#46A358] text-white shadow-lg'
                       : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                   }`}
+                  style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
                 >
                   {category.name}
-                  <span className="ml-2 text-sm opacity-75">
+                  <span className="ml-2 text-sm opacity-75" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                     ({category.count})
                   </span>
                 </button>
@@ -311,7 +313,7 @@ const Blogs = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4">
-                      <span className="bg-[#46A358] text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      <span className="bg-[#46A358] text-white px-3 py-1 rounded-full text-sm font-semibold" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
                         <FaTag className="inline mr-1" />
                         Plant Care
                       </span>
@@ -322,29 +324,29 @@ const Blogs = () => {
                   <div className="p-6">
                     {/* Date and Author */}
                     <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-2" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                         <FaCalendarAlt />
                         {formatDate(blog)}
                       </span>
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-2" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                         <FaUser />
                         Admin
                       </span>
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-2xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-[#46A358] transition-colors">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-[#46A358] transition-colors" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
                       {blog.name || 'Blog Post Title'}
                     </h2>
 
                     {/* Excerpt */}
-                    <p className="text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-gray-600 mb-4 line-clamp-3" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                       {truncateText(blog.lorem || 'Discover the secrets to keeping your plants healthy and thriving with our comprehensive guide...', 120)}
                     </p>
 
                     {/* Read More Button */}
                     <Link to={`/info/${blog.id}`}>
-                      <button className="flex items-center gap-2 text-[#46A358] font-semibold hover:gap-3 transition-all duration-300 group/btn">
+                      <button className="flex items-center gap-2 text-[#46A358] font-semibold hover:gap-3 transition-all duration-300 group/btn" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
                         Read More
                         <FaArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
                       </button>
@@ -370,10 +372,10 @@ const Blogs = () => {
         ) : (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🌱</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
               No blogs found
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
               {searchQuery
                 ? `No blogs match your search "${searchQuery}"`
                 : 'No blogs available at the moment'}
@@ -382,6 +384,7 @@ const Blogs = () => {
               <button
                 onClick={() => setSearchQuery('')}
                 className="mt-4 text-[#46A358] hover:underline"
+                style={{ fontFamily: 'Inter-Medium, sans-serif' }}
               >
                 Clear search
               </button>
@@ -391,10 +394,10 @@ const Blogs = () => {
 
         {/* Newsletter Section */}
         <div className="mt-16 bg-gradient-to-r from-[#46A358] to-[#3a8a47] rounded-2xl p-8 md:p-12 text-white text-center">
-          <h3 className="text-3xl md:text-4xl font-bold mb-4">
+          <h3 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
             Stay Updated
           </h3>
-          <p className="text-lg text-green-100 mb-6 max-w-2xl mx-auto">
+          <p className="text-lg text-green-100 mb-6 max-w-2xl mx-auto" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
             Subscribe to our newsletter and get the latest plant care tips, guides, and exclusive offers delivered to your inbox.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -402,8 +405,9 @@ const Blogs = () => {
               type="email"
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 rounded-lg border-2 border-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
+              style={{ fontFamily: 'Inter-Regular, sans-serif' }}
             />
-            <button className="bg-white text-[#46A358] px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+            <button className="bg-white text-[#46A358] px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
               Subscribe
             </button>
           </div>
