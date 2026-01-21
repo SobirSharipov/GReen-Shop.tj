@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router'
-import { Rate, Spin } from 'antd'
+import { Input, Modal, Rate, Spin, message } from 'antd'
+import TextArea from 'antd/es/input/TextArea'
 import { useGetUsersQuery } from '../../services/UserApi'
 import { FaFacebookF, FaInstagram, FaTwitter, FaShoppingCart, FaHeart, FaShareAlt } from 'react-icons/fa'
+import PaymentMethod from '../../components/PaymentMethod'
 
 const Info = () => {
     const { data, refetch } = useGetUsersQuery();
@@ -14,6 +16,23 @@ const Info = () => {
     let [count, setCount] = useState(1);
     let [selectedImage, setSelectedImage] = useState(null)
     const [randomThumbnails, setRandomThumbnails] = useState([])
+    const [selectedPayment, setSelectedPayment] = useState(null);
+
+    // Purchase flow modals
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+    const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+    const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+    const [receiptData, setReceiptData] = useState(null);
+
+    const [customerForm, setCustomerForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        city: '',
+        street: '',
+        notes: ''
+    });
 
     const user = data?.find((u) => String(u.id) === String(id));
 
@@ -125,6 +144,108 @@ const Info = () => {
         return Shop.some(item => item.id === id);
     };
 
+    const clampCount = (v) => Math.max(1, Math.min(99, v));
+
+    const openOrderModal = () => {
+        setIsOrderModalOpen(true);
+    };
+
+    const validateCustomerForm = () => {
+        const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'city', 'street'];
+        const missing = requiredFields.filter((k) => !customerForm[k] || customerForm[k].trim() === '');
+        if (missing.length > 0) {
+            message.error('Please fill in all required fields (*)');
+            return false;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(customerForm.email)) {
+            message.error('Please enter a valid email address');
+            return false;
+        }
+        return true;
+    };
+
+    const proceedToCustomerModal = () => {
+        // Auth check (same behavior as ModalAddres)
+        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        const userData = localStorage.getItem('user');
+        if (!isAuthenticated || !userData) {
+            message.warning('Please register or login to complete your purchase.');
+            window.dispatchEvent(new CustomEvent('openAuthModal'));
+            return;
+        }
+
+        const validPaymentMethods = ['paypal', 'mastercard', 'visa'];
+        if (!selectedPayment || !validPaymentMethods.includes(selectedPayment)) {
+            message.warning('Please select a payment method (PayPal, MasterCard, or VISA).');
+            return;
+        }
+
+        setIsOrderModalOpen(false);
+        setTimeout(() => setIsCustomerModalOpen(true), 150);
+    };
+
+    const completePurchase = () => {
+        if (!validateCustomerForm()) return;
+
+        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        const userData = localStorage.getItem('user');
+        if (!isAuthenticated || !userData) {
+            message.warning('Please register or login to complete your purchase.');
+            window.dispatchEvent(new CustomEvent('openAuthModal'));
+            return;
+        }
+
+        const parsedUser = JSON.parse(userData);
+        const userId = parsedUser.email || parsedUser.username;
+
+        const shipping = 16.0;
+        const subtotal = (parseFloat(user.prase || 0) * (count || 1));
+        const total = subtotal + shipping;
+        const orderNumber = String(Date.now()).slice(-8);
+
+        const receiptDataToSave = {
+            ...customerForm,
+            paymentMethod: selectedPayment,
+            items: [
+                {
+                    id: user.id,
+                    name: user.name,
+                    price: parseFloat(user.prase || 0),
+                    avatar: user.avatar,
+                    sku: user.sku,
+                    quantity: count || 1,
+                    size: selectedSize
+                }
+            ],
+            subtotal: subtotal.toFixed(2),
+            shipping: shipping.toFixed(2),
+            total: total.toFixed(2),
+            orderNumber,
+            date: new Date().toISOString(),
+            userId
+        };
+
+        const purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+        purchaseHistory.push(receiptDataToSave);
+        localStorage.setItem('purchaseHistory', JSON.stringify(purchaseHistory));
+
+        setReceiptData(receiptDataToSave);
+        setIsCustomerModalOpen(false);
+        setTimeout(() => setIsReceiptModalOpen(true), 150);
+
+        // reset customer form for next time
+        setCustomerForm({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            city: '',
+            street: '',
+            notes: ''
+        });
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-96">
@@ -149,8 +270,8 @@ const Info = () => {
     const sizes = ['S', 'M', 'L', 'XL'];
 
     return (
-        <div className="min-h-screen bg-[#FBFBFB]">
-            <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="min-h-screen bg-[#FBFBFB]" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
+            <div className="max-w-7xl mx-auto px-4 ">
                
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Left Side - Images */}
@@ -237,12 +358,12 @@ const Info = () => {
                     <div className="lg:w-[40%]">
                         <div className="bg-white rounded-2xl shadow-lg p-8">
                             {/* Product Name */}
-                            <h1 className="text-4xl font-bold text-gray-900 mb-4">{user.name}</h1>
+                            <h1 className="text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{user.name}</h1>
 
                             {/* Price and Rating */}
                             <div className="flex items-center justify-between mb-6 pb-6 border-b-2 border-gray-100">
                                 <div>
-                                    <span className="text-4xl font-bold text-[#46A358]">${user.prase}</span>
+                                    <span className="text-4xl font-bold text-[#46A358]" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>${user.prase}</span>
                                 </div>
                                 <div className="text-right">
                                     <Rate allowHalf defaultValue={4.5} disabled className="mb-2" />
@@ -252,7 +373,7 @@ const Info = () => {
 
                             {/* Description */}
                             <div className="mb-6">
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Description</h3>
+                                <h3 className="text-lg font-bold text-gray-900 mb-3" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Description</h3>
                                 <p className="text-gray-700 leading-relaxed line-clamp-4">
                                     {user.lorem || 'This beautiful plant will bring life and freshness to your home. Perfect for indoor spaces and easy to care for.'}
                                 </p>
@@ -277,6 +398,43 @@ const Info = () => {
                                         </button>
                                     ))}
                                 </div>
+
+                            {/* Count + Buy */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                        Count:
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-[#46A358] hover:text-white transition-colors font-bold"
+                                            onClick={() => setCount((c) => clampCount((c || 1) - 1))}
+                                            disabled={count <= 1}
+                                            style={{ fontFamily: 'Inter-Bold, sans-serif' }}
+                                        >
+                                            -
+                                        </button>
+                                        <span className="w-10 text-center font-semibold" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                            {count}
+                                        </span>
+                                        <button
+                                            className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-[#46A358] hover:text-white transition-colors font-bold"
+                                            onClick={() => setCount((c) => clampCount((c || 1) + 1))}
+                                            style={{ fontFamily: 'Inter-Bold, sans-serif' }}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={openOrderModal}
+                                    className="w-full sm:w-auto flex-1 bg-[#46A358] text-white py-3 px-6 rounded-lg hover:bg-[#3a8a47] transition-colors font-semibold"
+                                    style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
+                                >
+                                    Buy now
+                                </button>
+                            </div>
 
                             {/* Product Details */}
                             <div className="border-t pt-6 mb-6">
@@ -326,6 +484,258 @@ const Info = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal 1: Order card + payment */}
+            <Modal
+                title={<span style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Your order</span>}
+                open={isOrderModalOpen}
+                onCancel={() => setIsOrderModalOpen(false)}
+                footer={null}
+                width={720}
+            >
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex gap-3 flex-1">
+                        <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="w-24 h-24 rounded-xl object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                            <p className="text-lg font-bold text-gray-900 line-clamp-2" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
+                                {user.name}
+                            </p>
+                            <p className="text-sm text-gray-500" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
+                                SKU: {user.sku || 'N/A'} • Size: {selectedSize}
+                            </p>
+                            <div className="mt-2 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-[#46A358] hover:text-white transition-colors font-bold"
+                                        onClick={() => setCount((c) => clampCount((c || 1) - 1))}
+                                        disabled={count <= 1}
+                                        style={{ fontFamily: 'Inter-Bold, sans-serif' }}
+                                    >
+                                        -
+                                    </button>
+                                    <span className="w-10 text-center font-semibold" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                        {count}
+                                    </span>
+                                    <button
+                                        className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-[#46A358] hover:text-white transition-colors font-bold"
+                                        onClick={() => setCount((c) => clampCount((c || 1) + 1))}
+                                        style={{ fontFamily: 'Inter-Bold, sans-serif' }}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                                <p className="text-lg font-bold text-[#46A358]" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
+                                    ${(parseFloat(user.prase || 0) * (count || 1)).toFixed(2)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full md:w-72 bg-gray-50 rounded-xl p-4">
+                        <p className="font-bold text-gray-900 mb-3" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
+                            Summary
+                        </p>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Subtotal</span>
+                                <span className="font-semibold" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                    ${(parseFloat(user.prase || 0) * (count || 1)).toFixed(2)}
+                                </span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Shipping</span>
+                                <span className="font-semibold" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>$16.00</span>
+                            </div>
+                            <div className="border-t pt-2 flex justify-between">
+                                <span className="font-bold" style={{ fontFamily: 'Inter-Bold, sans-serif' }}>Total</span>
+                                <span className="font-bold text-[#46A358]" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
+                                    ${(parseFloat(user.prase || 0) * (count || 1) + 16).toFixed(2)}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-4">
+                            <PaymentMethod selectedPayment={selectedPayment} onPaymentChange={setSelectedPayment} />
+                        </div>
+
+                        <button
+                            onClick={proceedToCustomerModal}
+                            className="w-full mt-4 py-3 rounded-lg bg-[#46A358] text-white hover:bg-[#3a8a47] transition-colors font-semibold"
+                            style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Modal 2: Customer info */}
+            <Modal
+                title={<span style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Customer information</span>}
+                open={isCustomerModalOpen}
+                onCancel={() => setIsCustomerModalOpen(false)}
+                onOk={completePurchase}
+                okText="Pay"
+                cancelText="Cancel"
+                okButtonProps={{ className: 'bg-[#46A358] hover:bg-[#3a8a47] text-white font-semibold' }}
+                width={720}
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            First Name <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                            value={customerForm.firstName}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, firstName: e.target.value }))}
+                            placeholder="Enter your first name"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Last Name <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                            value={customerForm.lastName}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, lastName: e.target.value }))}
+                            placeholder="Enter your last name"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Email <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                            value={customerForm.email}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, email: e.target.value }))}
+                            placeholder="example@email.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Phone <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                            value={customerForm.phone}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, phone: e.target.value }))}
+                            placeholder="+992 123 456 789"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            City <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                            value={customerForm.city}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, city: e.target.value }))}
+                            placeholder="Enter your city"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Street <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                            value={customerForm.street}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, street: e.target.value }))}
+                            placeholder="Enter your street"
+                        />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                            Notes <span className="text-gray-500 text-xs font-normal">(optional)</span>
+                        </label>
+                        <TextArea
+                            rows={3}
+                            value={customerForm.notes}
+                            onChange={(e) => setCustomerForm((p) => ({ ...p, notes: e.target.value }))}
+                            placeholder="Add any special instructions..."
+                            maxLength={200}
+                            showCount
+                        />
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Modal 3: Receipt */}
+            <Modal
+                title={<span style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Receipt</span>}
+                open={isReceiptModalOpen}
+                onCancel={() => setIsReceiptModalOpen(false)}
+                footer={null}
+                width={720}
+            >
+                {receiptData ? (
+                    <div>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pb-4 border-b">
+                            <div>
+                                <p className="text-sm text-gray-500">Order #</p>
+                                <p className="font-bold text-gray-900" style={{ fontFamily: 'Inter-Bold, sans-serif' }}>
+                                    {receiptData.orderNumber}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Date</p>
+                                <p className="font-semibold text-gray-900" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                    {new Date(receiptData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Payment</p>
+                                <p className="font-semibold text-gray-900 capitalize" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                    {receiptData.paymentMethod}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Total</p>
+                                <p className="font-bold text-[#46A358]" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
+                                    ${receiptData.total}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 mb-4">
+                            {receiptData.items.map((it) => (
+                                <div key={it.id} className="flex items-center justify-between  pb-2">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <img src={it.avatar} alt={it.name} className="w-12 h-12 rounded-lg object-cover" />
+                                        <div className="min-w-0">
+                                            <p className="font-semibold text-gray-900 line-clamp-1" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                                                {it.name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                Qty: {it.quantity} • Size: {it.size}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p className="font-semibold text-[#46A358]" style={{ fontFamily: 'Inter-Bold, sans-serif' }}>
+                                        ${(it.price * it.quantity).toFixed(2)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="border-t pt-3 space-y-1 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Subtotal</span>
+                                <span className="font-medium">${receiptData.subtotal}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Shipping</span>
+                                <span className="font-medium">${receiptData.shipping}</span>
+                            </div>
+                            <div className="flex justify-between font-bold text-base pt-2 border-t">
+                                <span>Total</span>
+                                <span className="text-[#46A358]">${receiptData.total}</span>
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+            </Modal>
         </div>
     )
 }

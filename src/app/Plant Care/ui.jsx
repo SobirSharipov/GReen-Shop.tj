@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { 
-  FaSun, 
-  FaTint, 
-  FaLeaf, 
-  FaBug, 
-  FaSeedling, 
+import {
+  FaSun,
+  FaTint,
+  FaLeaf,
+  FaBug,
+  FaSeedling,
   FaTemperatureHigh,
   FaArrowRight,
   FaCheckCircle,
@@ -140,7 +140,7 @@ const Plant = () => {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}></div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
             <div className="flex-1 text-center md:text-left">
@@ -150,14 +150,14 @@ const Plant = () => {
               <p className="text-xl md:text-2xl text-green-50 max-w-3xl mb-6 drop-shadow-md" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>
                 Learn how to keep your plants healthy and thriving with our comprehensive care guides
               </p>
-              
+
               {/* Additional Information */}
               <div className="space-y-4 mb-6">
                 <p className="text-lg text-green-100 max-w-2xl" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
-                  Master the art of plant care with expert tips, step-by-step guides, and proven techniques. 
+                  Master the art of plant care with expert tips, step-by-step guides, and proven techniques.
                   Whether you're a beginner or experienced gardener, find everything you need to nurture your green companions.
                 </p>
-                
+
                 {/* Key Features */}
                 <div className="hidden md:flex flex-wrap gap-4 mt-6">
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
@@ -179,13 +179,13 @@ const Plant = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex-1 flex justify-center md:justify-end">
               <div className="relative">
                 <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl transform rotate-6"></div>
-                <img 
-                  src={plantImage} 
-                  alt="Beautiful plant" 
+                <img
+                  src={plantImage}
+                  alt="Beautiful plant"
                   className="relative w-full max-w-md md:max-w-lg h-auto object-contain rounded-2xl drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -194,50 +194,62 @@ const Plant = () => {
 
           {/* Statistics Section */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <FaClipboardList className="text-2xl text-white" />
+                <div className='flex gap-4 items-center'>
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <FaClipboardList className="text-2xl text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{careCategories.length}</div>
                 </div>
                 <div className='md:block flex gap-2 mt-2'>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{careCategories.length}</div>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{careCategories.length}</div>
                   <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Care Categories</div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <FaLightbulb className="text-2xl text-white" />
+                <div className='flex gap-4 items-center'>
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <FaLightbulb className="text-2xl text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50+</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50+</div>
-                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Expert Tips</div>
+                <div >
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50+</div>
+                  <div className="text-green-100 text-sm font-medium mt-2 md:mt-0" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Expert Tips</div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <FaBook className="text-2xl text-white" />
+                <div className='flex gap-4 items-center'>
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <FaBook className="text-2xl text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>100+</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>100+</div>
-                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Care Guides</div>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>100+</div>
+                  <div className="text-green-100 text-sm font-medium mt-2 md:mt-0" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Care Guides</div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <FaUsers className="text-2xl text-white" />
+                <div className='flex gap-4 items-center'>
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <FaUsers className="text-2xl text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>25K+</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>25K+</div>
-                  <div className="text-green-100 text-sm font-medium" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Happy Gardeners</div>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>25K+</div>
+                  <div className="text-green-100 text-sm font-medium mt-2 md:mt-0" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>Happy Gardeners</div>
                 </div>
               </div>
             </div>
@@ -257,20 +269,18 @@ const Plant = () => {
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`p-6 rounded-xl transition-all duration-300 transform hover:scale-105 ${
-                  activeCategory === category.id
-                    ? `${category.color} shadow-lg ring-2 ring-[#46A358]`
-                    : 'bg-white hover:bg-gray-50 shadow-md'
-                }`}
+                className={`p-6 rounded-xl transition-all duration-300 transform hover:scale-105 ${activeCategory === category.id
+                  ? `${category.color} shadow-lg ring-2 ring-[#46A358]`
+                  : 'bg-white hover:bg-gray-50 shadow-md'
+                  }`}
               >
                 <div className="flex flex-col items-center gap-3">
                   <div className={activeCategory === category.id ? '' : 'text-gray-600'}>
                     {category.icon}
                   </div>
-                  <p className={`font-semibold text-sm md:text-base ${
-                    activeCategory === category.id ? '' : 'text-gray-700'
-                  }`}
-                  style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
+                  <p className={`font-semibold text-sm md:text-base ${activeCategory === category.id ? '' : 'text-gray-700'
+                    }`}
+                    style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
                   >
                     {category.title}
                   </p>

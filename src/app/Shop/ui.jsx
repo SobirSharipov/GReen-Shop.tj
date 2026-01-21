@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Rate, Spin } from 'antd';
+import { Input, Modal, Rate, Spin, message } from 'antd';
+import TextArea from 'antd/es/input/TextArea';
 import { useGetUsersQuery } from '../../services/UserApi';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, FaYoutube } from 'react-icons/fa6';
 import CarousetProducks from '../../components/carousetProducks';
 import { Link } from 'react-router';
+import PaymentMethod from '../../components/PaymentMethod';
 
 const Shop = () => {
   const { data: allData, isLoading, error, refetch } = useGetUsersQuery();
@@ -15,6 +17,23 @@ const Shop = () => {
   let [rez3, setrez3] = useState(false)
   const [heartItems, setHeartItems] = useState([]);
   const [activeTab, setActiveTab] = useState('description');
+  const [selectedPayment, setSelectedPayment] = useState(null);
+
+  // Purchase flow modals
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [receiptData, setReceiptData] = useState(null);
+
+  const [customerForm, setCustomerForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    city: '',
+    street: '',
+    notes: ''
+  });
 
   const isInHeart = (id) => {
     return heartItems.some(item => item.id === id);
@@ -113,12 +132,118 @@ const Shop = () => {
 
   const selectedItem = allData?.find(el => el.id === selectedImageId);
 
-  return (
-    <div className="p-4">
-      <p className="mb-6">
-        <span className="font-bold text-[#46A358]">Home</span> / <span className="text-gray-600 font-medium">Shop</span>
-      </p>
+  const clampCount = (v) => Math.max(1, Math.min(99, v));
+  const getSelectedSize = () => {
+    if (rez) return 'S';
+    if (rez1) return 'M';
+    if (rez2) return 'L';
+    if (rez3) return 'XL';
+    return 'M';
+  };
 
+  const openOrderModal = () => {
+    if (!selectedItem) return;
+    setIsOrderModalOpen(true);
+  };
+
+  const validateCustomerForm = () => {
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'city', 'street'];
+    const missing = requiredFields.filter((k) => !customerForm[k] || customerForm[k].trim() === '');
+    if (missing.length > 0) {
+      message.error('Please fill in all required fields (*)');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerForm.email)) {
+      message.error('Please enter a valid email address');
+      return false;
+    }
+    return true;
+  };
+
+  const proceedToCustomerModal = () => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const userData = localStorage.getItem('user');
+    if (!isAuthenticated || !userData) {
+      message.warning('Please register or login to complete your purchase.');
+      window.dispatchEvent(new CustomEvent('openAuthModal'));
+      return;
+    }
+
+    const validPaymentMethods = ['paypal', 'mastercard', 'visa'];
+    if (!selectedPayment || !validPaymentMethods.includes(selectedPayment)) {
+      message.warning('Please select a payment method (PayPal, MasterCard, or VISA).');
+      return;
+    }
+
+    setIsOrderModalOpen(false);
+    setTimeout(() => setIsCustomerModalOpen(true), 150);
+  };
+
+  const completePurchase = () => {
+    if (!selectedItem) return;
+    if (!validateCustomerForm()) return;
+
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const userData = localStorage.getItem('user');
+    if (!isAuthenticated || !userData) {
+      message.warning('Please register or login to complete your purchase.');
+      window.dispatchEvent(new CustomEvent('openAuthModal'));
+      return;
+    }
+
+    const parsedUser = JSON.parse(userData);
+    const userId = parsedUser.email || parsedUser.username;
+
+    const shipping = 16.0;
+    const unitPrice = parseFloat(selectedItem.prase || 0);
+    const subtotal = unitPrice * (count || 1);
+    const total = subtotal + shipping;
+    const orderNumber = String(Date.now()).slice(-8);
+
+    const receiptDataToSave = {
+      ...customerForm,
+      paymentMethod: selectedPayment,
+      items: [
+        {
+          id: selectedItem.id,
+          name: selectedItem.name,
+          price: unitPrice,
+          avatar: selectedItem.avatar,
+          sku: selectedItem.sku,
+          quantity: count || 1,
+          size: getSelectedSize()
+        }
+      ],
+      subtotal: subtotal.toFixed(2),
+      shipping: shipping.toFixed(2),
+      total: total.toFixed(2),
+      orderNumber,
+      date: new Date().toISOString(),
+      userId
+    };
+
+    const purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+    purchaseHistory.push(receiptDataToSave);
+    localStorage.setItem('purchaseHistory', JSON.stringify(purchaseHistory));
+
+    setReceiptData(receiptDataToSave);
+    setIsCustomerModalOpen(false);
+    setTimeout(() => setIsReceiptModalOpen(true), 150);
+
+    setCustomerForm({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      city: '',
+      street: '',
+      notes: ''
+    });
+  };
+
+  return (
+    <div className="">
       <div className="flex flex-col md:flex-row md:gap-6">
         {/* Десктопная галерея (вертикальная) */}
         <div className="hidden md:block md:w-[15%] h-110 overflow-y-auto scrollbar-hide pr-2">
@@ -359,7 +484,14 @@ const Shop = () => {
                       +
                     </button>
                   <Link to={"/ToCard"} className="mt-2 md:mt-0">
-                    <button className="bg-[#46A358] bg-gradient-to-t from-white/60 text-white font-serif text-sm md:text-l border p-2 px-4 md:px-6 cursor-pointer rounded-xl w-full md:w-auto">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        openOrderModal();
+                      }}
+                      className="bg-[#46A358] bg-gradient-to-t from-white/60 text-white font-serif text-sm md:text-l border p-2 px-4 md:px-6 cursor-pointer rounded-xl w-full md:w-auto"
+                    >
                       Buy NOW
                     </button>
                   </Link>
@@ -482,6 +614,245 @@ const Shop = () => {
         </div>
       </div>
       <CarousetProducks />
+
+      {/* Modal 1: Order card + payment */}
+      <Modal
+        title={<span className="font-bold">Your order</span>}
+        open={isOrderModalOpen}
+        onCancel={() => setIsOrderModalOpen(false)}
+        footer={null}
+        width={720}
+      >
+        {selectedItem ? (
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex gap-3 flex-1">
+              <img
+                src={selectedItem.avatar}
+                alt={selectedItem.name}
+                className="w-24 h-24 rounded-xl object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-lg font-bold text-gray-900 line-clamp-2">
+                  {selectedItem.name}
+                </p>
+                <p className="text-sm text-gray-500">
+                  SKU: {selectedItem.sku || 'N/A'} • Size: {getSelectedSize()}
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-[#46A358] hover:text-white transition-colors font-bold"
+                      onClick={() => setCount((c) => clampCount((c || 1) - 1))}
+                      disabled={count <= 1}
+                    >
+                      -
+                    </button>
+                    <span className="w-10 text-center font-semibold">{count}</span>
+                    <button
+                      className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-[#46A358] hover:text-white transition-colors font-bold"
+                      onClick={() => setCount((c) => clampCount((c || 1) + 1))}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <p className="text-lg font-bold text-[#46A358]">
+                    ${(parseFloat(selectedItem.prase || 0) * (count || 1)).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full md:w-72 bg-gray-50 rounded-xl p-4">
+              <p className="font-bold text-gray-900 mb-3">Summary</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-semibold">
+                    ${(parseFloat(selectedItem.prase || 0) * (count || 1)).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-semibold">$16.00</span>
+                </div>
+                <div className="border-t pt-2 flex justify-between">
+                  <span className="font-bold">Total</span>
+                  <span className="font-bold text-[#46A358]">
+                    ${(parseFloat(selectedItem.prase || 0) * (count || 1) + 16).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <PaymentMethod selectedPayment={selectedPayment} onPaymentChange={setSelectedPayment} />
+              </div>
+
+              <button
+                onClick={proceedToCustomerModal}
+                className="w-full mt-4 py-3 rounded-lg bg-[#46A358] text-white hover:bg-[#3a8a47] transition-colors font-semibold"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </Modal>
+
+      {/* Modal 2: Customer info */}
+      <Modal
+        title={<span className="font-bold">Customer information</span>}
+        open={isCustomerModalOpen}
+        onCancel={() => setIsCustomerModalOpen(false)}
+        onOk={completePurchase}
+        okText="Pay"
+        cancelText="Cancel"
+        okButtonProps={{ className: 'bg-[#46A358] hover:bg-[#3a8a47] text-white font-semibold' }}
+        width={720}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              First Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={customerForm.firstName}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, firstName: e.target.value }))}
+              placeholder="Enter your first name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Last Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={customerForm.lastName}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, lastName: e.target.value }))}
+              placeholder="Enter your last name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={customerForm.email}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, email: e.target.value }))}
+              placeholder="example@email.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Phone <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={customerForm.phone}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, phone: e.target.value }))}
+              placeholder="+992 123 456 789"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              City <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={customerForm.city}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, city: e.target.value }))}
+              placeholder="Enter your city"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Street <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={customerForm.street}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, street: e.target.value }))}
+              placeholder="Enter your street"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Notes <span className="text-gray-500 text-xs font-normal">(optional)</span>
+            </label>
+            <TextArea
+              rows={3}
+              value={customerForm.notes}
+              onChange={(e) => setCustomerForm((p) => ({ ...p, notes: e.target.value }))}
+              placeholder="Add any special instructions..."
+              maxLength={200}
+              showCount
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal 3: Receipt */}
+      <Modal
+        title={<span className="font-bold">Receipt</span>}
+        open={isReceiptModalOpen}
+        onCancel={() => setIsReceiptModalOpen(false)}
+        footer={null}
+        width={720}
+      >
+        {receiptData ? (
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pb-4 border-b">
+              <div>
+                <p className="text-sm text-gray-500">Order #</p>
+                <p className="font-bold text-gray-900">{receiptData.orderNumber}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Date</p>
+                <p className="font-semibold text-gray-900">
+                  {new Date(receiptData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Payment</p>
+                <p className="font-semibold text-gray-900 capitalize">{receiptData.paymentMethod}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Total</p>
+                <p className="font-bold text-[#46A358]">${receiptData.total}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 mb-4">
+              {receiptData.items.map((it) => (
+                <div key={it.id} className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img src={it.avatar} alt={it.name} className="w-12 h-12 rounded-lg object-cover" />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 line-clamp-1">{it.name}</p>
+                      <p className="text-xs text-gray-500">
+                        Qty: {it.quantity} • Size: {it.size}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="font-semibold text-[#46A358]">
+                    ${(it.price * it.quantity).toFixed(2)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="border-t pt-3 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal</span>
+                <span className="font-medium">${receiptData.subtotal}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Shipping</span>
+                <span className="font-medium">${receiptData.shipping}</span>
+              </div>
+              <div className="flex justify-between font-bold text-base pt-2 border-t">
+                <span>Total</span>
+                <span className="text-[#46A358]">${receiptData.total}</span>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </Modal>
     </div>
   );
 };

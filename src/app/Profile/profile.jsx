@@ -10,6 +10,8 @@ const Profile = () => {
   const [isItemsModalOpen, setIsItemsModalOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPhotoViewerOpen, setIsPhotoViewerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [editFormData, setEditFormData] = useState({
     username: '',
     email: ''
@@ -34,6 +36,12 @@ const Profile = () => {
     }
     
     setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const handlePhotoUpload = (e) => {
@@ -61,6 +69,11 @@ const Profile = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const openPhotoViewer = () => {
+    if (!isMobile) return;
+    setIsPhotoViewerOpen(true);
   };
 
   const handleLogout = () => {
@@ -159,17 +172,29 @@ const Profile = () => {
             {/* Profile Photo */}
             <div className="relative">
               {profilePhoto ? (
-                <img
-                  src={profilePhoto}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-[#46A358]"
-                />
+                <button
+                  type="button"
+                  onClick={openPhotoViewer}
+                  className="block rounded-full"
+                  title="View profile photo"
+                >
+                  <img
+                    src={profilePhoto}
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-[#46A358]"
+                  />
+                </button>
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-[#46A358] flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={openPhotoViewer}
+                  className="w-32 h-32 rounded-full bg-gray-200 border-4 border-[#46A358] flex items-center justify-center"
+                  title="View profile photo"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-gray-400">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                   </svg>
-                </div>
+                </button>
               )}
               <label className="absolute bottom-0 right-0 bg-[#46A358] hover:bg-[#3a8a47] text-white p-2 rounded-full cursor-pointer transition-colors shadow-lg">
                 <input
@@ -267,12 +292,15 @@ const Profile = () => {
                               </p>
                             </div>
                           </div>
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                          <div className="flex items-center flex-wrap gap-2 text-sm text-gray-600">
                             <button
                               onClick={() => handleShowItems(receipt)}
-                              className="hover:text-[#46A358] transition-colors cursor-pointer"
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:border-[#46A358] hover:bg-[#46A358]/5 hover:text-[#46A358] transition-colors cursor-pointer"
                             >
-                              <span className="font-medium">Items:</span> {receipt.items?.length || 0}
+                              <span className="font-medium">Items</span>
+                              <span className="bg-[#46A358]/10 text-[#46A358] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                {receipt.items?.length || 0}
+                              </span>
                             </button>
                             <span>
                               <span className="font-medium">Payment:</span>{' '}
@@ -283,7 +311,7 @@ const Profile = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="text-left md:text-right">
+                        <div className="text-left md:text-right flex justify-between items-center">
                           <p className="text-2xl font-bold text-[#46A358] mb-1">${receipt.total}</p>
                           <span className="inline-block bg-green-50 text-green-700 text-xs font-medium px-2 py-1 rounded">
                             Completed
@@ -372,6 +400,63 @@ const Profile = () => {
           </div>
         )}
       </Modal>
+
+      {/* Fullscreen Profile Photo (mobile only) */}
+      {isMobile && (
+      <Modal
+        open={isPhotoViewerOpen}
+        onCancel={() => setIsPhotoViewerOpen(false)}
+        footer={null}
+        closable={false}
+        wrapClassName="profile-photo-fullscreen"
+      >
+        <div className="relative w-full h-180 bg-black rounded-2xl">
+          {/* Close */}
+          <button
+            type="button"
+            onClick={() => setIsPhotoViewerOpen(false)}
+            className="absolute top-4 right-4 z-20 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors"
+            aria-label="Close"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Edit photo */}
+          <label className="absolute top-4 left-4 z-20 bg-[#46A358] hover:bg-[#3a8a47] text-white px-4 py-2 rounded-xl cursor-pointer transition-colors font-semibold flex items-center gap-2 shadow-lg">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+            
+          </label>
+
+          <div className="w-full h-full flex items-center justify-center">
+            {profilePhoto ? (
+              <img
+                src={profilePhoto}
+                alt="Profile"
+                className="max-w-full max-h-full object-contain"
+              />
+            ) : (
+              <div className="text-white/80 text-center px-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-20 h-20 text-white/50 mx-auto mb-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                <p className="text-lg font-semibold">No profile photo</p>
+                <p className="text-sm text-white/60 mt-1">Tap “Edit profile photo” to upload one.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </Modal>
+      )}
 
       {/* Edit Profile Modal */}
       <Modal

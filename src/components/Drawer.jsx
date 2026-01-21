@@ -7,6 +7,8 @@ const MobileDrawer = ({ isAuthenticated, userPhoto, getHeart, getCart, onUserCli
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const currentYear = new Date().getFullYear();
+  const brandName = (typeof document !== 'undefined' && document.title) ? document.title : 'GreenShop';
 
   const showDrawer = () => {
     setOpen(true);
@@ -51,7 +53,7 @@ const MobileDrawer = ({ isAuthenticated, userPhoto, getHeart, getCart, onUserCli
       <AntDrawer
         title={
           <div className="flex items-center gap-3">
-            <img src={logo} alt="GreenShop" className="h-8" />
+            <img src={logo} alt={brandName} className="h-8" />
           </div>
         }
         placement="left"
@@ -143,7 +145,7 @@ const MobileDrawer = ({ isAuthenticated, userPhoto, getHeart, getCart, onUserCli
           {/* Footer */}
           <div className="border-t border-gray-200 p-6">
             <p className="text-xs text-gray-500 text-center">
-              © 2024 GreenShop. All rights reserved.
+              © {currentYear} {brandName}. All rights reserved.
             </p>
           </div>
         </div>

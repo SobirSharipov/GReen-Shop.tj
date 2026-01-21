@@ -409,7 +409,7 @@ const Layout = () => {
           </div>
           <div className='mb-4 md:mb-0'>
             <p className='font-bold text-lg md:text-2xl mb-2' style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>Social Media</p>
-            <div className='flex gap-2 my-2'>
+            <div className='md:flex flex flex-wrap  gap-2 my-2'>
               <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#46A358] text-[#46A358] rounded-lg hover:bg-[#46A358] hover:text-white transition-all duration-200" >
                 <FaFacebookF className="w-4 h-4 md:w-5 md:h-5" />
               </div>

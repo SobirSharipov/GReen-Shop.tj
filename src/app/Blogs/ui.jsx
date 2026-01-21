@@ -2,9 +2,9 @@ import React, { useState, useMemo } from 'react'
 import { useGetUsersQuery } from '../../services/UserApi'
 import { Link } from 'react-router'
 import { Pagination, Spin } from 'antd'
-import { 
-  FaCalendarAlt, 
-  FaUser, 
+import {
+  FaCalendarAlt,
+  FaUser,
   FaTag,
   FaArrowRight,
   FaSearch,
@@ -38,7 +38,7 @@ const Blogs = () => {
   // Calculate category counts dynamically
   const blogCategories = useMemo(() => {
     if (!allData) return []
-    
+
     const counts = {
       all: allData.length,
       care: 0,
@@ -46,12 +46,12 @@ const Blogs = () => {
       guides: 0,
       news: 0
     }
-    
+
     allData.forEach((_, index) => {
       const category = getBlogCategory(index, allData.length)
       counts[category]++
     })
-    
+
     return [
       { id: 'all', name: 'All Posts', count: counts.all },
       { id: 'care', name: 'Plant Care', count: counts.care },
@@ -70,17 +70,17 @@ const Blogs = () => {
   // Filter and search blogs
   const filteredBlogs = useMemo(() => {
     if (!allData) return []
-    
+
     let filtered = [...allData]
-    
+
     // Search filter
     if (searchQuery.trim()) {
-      filtered = filtered.filter(blog => 
+      filtered = filtered.filter(blog =>
         blog.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         blog.lorem?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
-    
+
     // Category filter - real filtering based on assigned categories
     if (selectedCategory !== 'all') {
       filtered = filtered.filter((blog, index) => {
@@ -88,7 +88,7 @@ const Blogs = () => {
         return blogCategory === selectedCategory
       })
     }
-    
+
     return filtered
   }, [allData, selectedCategory, searchQuery])
 
@@ -109,10 +109,10 @@ const Blogs = () => {
     if (blog.data) return blog.data
     const date = new Date()
     date.setDate(date.getDate() - Math.floor(Math.random() * 30))
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     })
   }
 
@@ -148,7 +148,7 @@ const Blogs = () => {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}></div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
             <div className="flex-1 text-center md:text-left">
@@ -158,14 +158,14 @@ const Blogs = () => {
               <p className="text-xl md:text-2xl text-green-50 max-w-3xl mb-6 drop-shadow-md" style={{ fontFamily: 'Inter-Medium, sans-serif' }}>
                 Discover expert tips, plant care guides, and inspiring stories to help your plants thrive
               </p>
-              
+
               {/* Additional Information */}
               <div className="space-y-4 mb-6">
                 <p className="text-lg text-green-100 max-w-2xl" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
-                  Join our community of plant enthusiasts and learn from experienced gardeners. 
+                  Join our community of plant enthusiasts and learn from experienced gardeners.
                   Get access to exclusive content, seasonal guides, and personalized care recommendations.
                 </p>
-                
+
                 {/* Key Features */}
                 <div className="flex flex-wrap gap-4 mt-6">
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
@@ -183,13 +183,13 @@ const Blogs = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex-1 flex justify-center md:justify-end">
               <div className="relative">
                 <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl transform rotate-6"></div>
-                <img 
-                  src={blogImage} 
-                  alt="Blog illustration" 
+                <img
+                  src={blogImage}
+                  alt="Blog illustration"
                   className="relative w-full max-w-md md:max-w-lg h-auto object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -198,49 +198,62 @@ const Blogs = () => {
 
           {/* Statistics Section */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <FaBook className="text-2xl text-white" />
+                <div className='flex gap-2 items-center '>
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <FaBook className="text-2xl text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{allData?.length || 0}+</div>
+
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{allData?.length || 0}+</div>
+                <div className='md:mt-0 mt-2'>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>{allData?.length || 0}+</div>
                   <div className="text-green-100 text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Blog Posts</div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
+                <div className='flex gap-2 items-center'>
                 <div className="bg-white/20 p-3 rounded-lg">
                   <FaUsers className="text-2xl text-white" />
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>15+</div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>15+</div>
+                </div>
+                <div className='md:mt-0 mt-2'>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>15+</div>
                   <div className="text-green-100 text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Expert Authors</div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
+                <div className='flex gap-2 items-center'>
                 <div className="bg-white/20 p-3 rounded-lg">
                   <FaTag className="text-2xl text-white" />
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>5+</div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>5+</div>
+                </div>
+                <div className='md:mt-0 mt-2'>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>5+</div>
                   <div className="text-green-100 text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Categories</div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
               <div className="md:flex items-center gap-3 mb-2">
+                <div className='flex gap-2 items-center'>
                 <div className="bg-white/20 p-3 rounded-lg">
                   <FaLeaf className="text-2xl text-white" />
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50K+</div>
+                  <div className="text-3xl font-bold text-white md:hidden" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50K+</div>
+                </div>
+                <div  className='md:mt-0 mt-2'>
+                  <div className="text-3xl font-bold text-white hidden md:block" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>50K+</div>
                   <div className="text-green-100  text-sm" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>Monthly Readers</div>
                 </div>
               </div>
@@ -279,11 +292,10 @@ const Blogs = () => {
                     setSelectedCategory(category.id)
                     setCurrentPage(1)
                   }}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
-                    selectedCategory === category.id
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${selectedCategory === category.id
                       ? 'bg-[#46A358] text-white shadow-lg'
                       : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                  }`}
+                    }`}
                   style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
                 >
                   {category.name}
@@ -299,31 +311,35 @@ const Blogs = () => {
         {/* Blog Posts Grid */}
         {paginatedBlogs.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-10 sm:mb-12">
               {paginatedBlogs.map((blog) => (
                 <article
                   key={blog.id}
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group"
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group"
                 >
                   {/* Blog Image */}
-                  <div className="relative overflow-hidden h-64">
+                  <div className="relative overflow-hidden h-52 sm:h-60 lg:h-64">
                     <img
                       src={blog.avatar}
                       alt={blog.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-[#46A358] text-white px-3 py-1 rounded-full text-sm font-semibold" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
-                        <FaTag className="inline mr-1" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-black/0" />
+                    <div className="absolute top-3 left-3">
+                      <span
+                        className="inline-flex items-center gap-1 bg-white/90 text-[#2d6e3a] px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-sm border border-white/60"
+                        style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
+                      >
+                        <FaTag className="inline" />
                         Plant Care
                       </span>
                     </div>
                   </div>
 
                   {/* Blog Content */}
-                  <div className="p-6">
+                  <div className="p-4 sm:p-5 lg:p-6">
                     {/* Date and Author */}
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-gray-500 mb-3">
                       <span className="flex items-center gap-2" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                         <FaCalendarAlt />
                         {formatDate(blog)}
@@ -335,20 +351,28 @@ const Blogs = () => {
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-2xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-[#46A358] transition-colors" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>
+                    <h2
+                      className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-[#46A358] transition-colors"
+                      style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}
+                    >
                       {blog.name || 'Blog Post Title'}
                     </h2>
 
                     {/* Excerpt */}
-                    <p className="text-gray-600 mb-4 line-clamp-3" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
+                    <p className="text-gray-600 mb-4 line-clamp-3 text-sm sm:text-base" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
                       {truncateText(blog.lorem || 'Discover the secrets to keeping your plants healthy and thriving with our comprehensive guide...', 120)}
                     </p>
 
                     {/* Read More Button */}
                     <Link to={`/info/${blog.id}`}>
-                      <button className="flex items-center gap-2 text-[#46A358] font-semibold hover:gap-3 transition-all duration-300 group/btn" style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}>
+                      <button
+                        className="inline-flex items-center gap-2 text-[#46A358] font-semibold hover:gap-3 transition-all duration-300 group/btn"
+                        style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
+                      >
                         Read More
-                        <FaArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+                        <span className="w-7 h-7 rounded-full bg-[#46A358]/10 flex items-center justify-center group-hover/btn:bg-[#46A358] group-hover/btn:text-white transition-colors">
+                          <FaArrowRight className="group-hover/btn:translate-x-0.5 transition-transform" />
+                        </span>
                       </button>
                     </Link>
                   </div>
