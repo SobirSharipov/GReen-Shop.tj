@@ -10,6 +10,7 @@ import ToCard from './app/To Card/toCard'
 import Checkout from './app/Checkout/checkout'
 import Info from './app/Info/info'
 import Profile from './app/Profile/profile'
+import Dashboard from './app/Dashboard/ui'
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
         <Route path='Checkout' element={<Checkout/>}/>
         <Route path='/info/:id' element={<Info/>}/>
         <Route path='Profile' element={<Profile/>}/>
+        <Route path='Dashboard' element={<Dashboard/>}/>
         </Route>
       </Routes>
     </>

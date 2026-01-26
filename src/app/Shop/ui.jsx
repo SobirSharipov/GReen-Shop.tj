@@ -6,9 +6,11 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, FaYoutube } from 're
 import CarousetProducks from '../../components/carousetProducks';
 import { Link } from 'react-router';
 import PaymentMethod from '../../components/PaymentMethod';
+import { mergeProducts } from '../../utils/products';
 
 const Shop = () => {
-  const { data: allData, isLoading, error, refetch } = useGetUsersQuery();
+  const { data: allDataRaw, isLoading, error, refetch } = useGetUsersQuery();
+  const allData = mergeProducts(allDataRaw);
   const [selectedImageId, setSelectedImageId] = useState(allData?.[0]?.id || null);
   let [count, setCount] = useState(1);
   let [rez, setrez] = useState(false)

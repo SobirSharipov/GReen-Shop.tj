@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link, useParams } from 'react-router'
 import { Input, Modal, Rate, Spin, message } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useGetUsersQuery } from '../../services/UserApi'
 import { FaFacebookF, FaInstagram, FaTwitter, FaShoppingCart, FaHeart, FaShareAlt } from 'react-icons/fa'
 import PaymentMethod from '../../components/PaymentMethod'
+import { mergeProducts } from '../../utils/products'
 
 const Info = () => {
-    const { data, refetch } = useGetUsersQuery();
+    const { data: dataRaw, refetch } = useGetUsersQuery();
+    const data = useMemo(() => mergeProducts(dataRaw || []), [dataRaw]);
     let { id } = useParams()
-    let [product, setProduct] = useState(null)
-    let [loading, setLoading] = useState(true)
-    let [error, setError] = useState(null)
-    let [selectedSize, setSelectedSize] = useState('M')
-    let [count, setCount] = useState(1);
-    let [selectedImage, setSelectedImage] = useState(null)
+
+    const [product, setProduct] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [selectedSize, setSelectedSize] = useState('M')
+    const [count, setCount] = useState(1);
+    const [selectedImage, setSelectedImage] = useState(null)
     const [randomThumbnails, setRandomThumbnails] = useState([])
     const [selectedPayment, setSelectedPayment] = useState(null);
 
@@ -34,8 +37,12 @@ const Info = () => {
         notes: ''
     });
 
-    const user = data?.find((u) => String(u.id) === String(id));
+    const user = useMemo(() => {
+        if (!data || !id) return null;
+        return data.find((u) => String(u.id) === String(id));
+    }, [data, id]);
 
+    // Инициализация продукта
     useEffect(() => {
         if (user) {
             setProduct(user)
@@ -45,25 +52,38 @@ const Info = () => {
             setError('Product not found')
             setLoading(false)
         }
-    }, [user?.id, data])
+    }, [user, data])
 
-    // Generate random thumbnails
+    // Generate random thumbnails - FIXED
     useEffect(() => {
         if (data && data.length > 0 && user) {
             // Filter out current user's image and get random 6
-            const filteredData = data.filter(el => el.avatar !== user.avatar && el.id !== user.id);
-            const shuffled = [...filteredData].sort(() => Math.random() - 0.5);
-            setRandomThumbnails(shuffled.slice(0, 6));
+            const filteredData = data.filter(el => {
+                return el.avatar !== user.avatar && el.id !== user.id;
+            });
+
+            // Используем стабильный алгоритм для выбора случайных элементов
+            const getRandomElements = (arr, count) => {
+                const shuffled = [...arr];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled.slice(0, count);
+            };
+
+            const randomItems = getRandomElements(filteredData, 6);
+            setRandomThumbnails(randomItems);
         }
-    }, [data, user?.id])
+    }, [data, user]) // Исправлены зависимости
 
     const [heartItems, setHeartItems] = useState([]);
 
-    const isInHeart = (id) => {
+    const isInHeart = useCallback((id) => {
         return heartItems.some(item => item.id === id);
-    };
+    }, [heartItems]);
 
-    function Liked(el) {
+    const Liked = useCallback((el) => {
         const savedHeart = JSON.parse(localStorage.getItem('Heart')) || [];
         const isAlreadyLiked = savedHeart.find((item) => item.id === el.id);
 
@@ -89,8 +109,8 @@ const Info = () => {
         }));
 
         refetch();
-    }
-    
+    }, [refetch]);
+
     useEffect(() => {
         const savedHeart = localStorage.getItem('Heart');
         if (savedHeart) {
@@ -100,7 +120,7 @@ const Info = () => {
 
     const [Shop, setShop] = useState([]);
 
-    function ShopFunction(el, quantity = count) {
+    const ShopFunction = useCallback((el, quantity = count) => {
         const savedCart = JSON.parse(localStorage.getItem('Cart')) || [];
         const isAlreadyInCart = savedCart.find((item) => item.id === el.id);
 
@@ -131,7 +151,7 @@ const Info = () => {
         }));
 
         refetch();
-    }
+    }, [count, refetch]);
 
     useEffect(() => {
         const savedCart = localStorage.getItem('Cart');
@@ -140,9 +160,9 @@ const Info = () => {
         }
     }, []);
 
-    const isInCart = (id) => {
+    const isInCart = useCallback((id) => {
         return Shop.some(item => item.id === id);
-    };
+    }, [Shop]);
 
     const clampCount = (v) => Math.max(1, Math.min(99, v));
 
@@ -246,6 +266,22 @@ const Info = () => {
         });
     };
 
+    // Используем useMemo для вычисления значений, которые используются в JSX
+    const thumbnailData = useMemo(() => {
+        if (!data || data.length === 0 || randomThumbnails.length === 0 || !user) {
+            return null;
+        }
+
+        const currentMainImage = selectedImage || user.avatar;
+        const isMainImageSelected = !randomThumbnails.some(el => el.avatar === selectedImage);
+
+        return {
+            currentMainImage,
+            isMainImageSelected,
+            randomThumbnails
+        };
+    }, [data, randomThumbnails, user, selectedImage]);
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-96">
@@ -272,7 +308,7 @@ const Info = () => {
     return (
         <div className="min-h-screen bg-[#FBFBFB]" style={{ fontFamily: 'Inter-Regular, sans-serif' }}>
             <div className="max-w-7xl mx-auto px-4 ">
-               
+
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Left Side - Images */}
                     <div className="lg:w-[60%]">
@@ -284,24 +320,22 @@ const Info = () => {
                                 className="w-full md:h-[600px] h-100 object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                             <div className="absolute top-4 right-4 flex gap-2">
-                                <button 
-                                    onClick={() => Liked(user)} 
-                                    className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-                                        isInHeart(user.id) 
-                                            ? 'bg-[#46A358] text-white' 
+                                <button
+                                    onClick={() => Liked(user)}
+                                    className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${isInHeart(user.id)
+                                            ? 'bg-[#46A358] text-white'
                                             : 'bg-white/90 text-gray-700 hover:bg-white'
-                                    }`}
+                                        }`}
                                     title={isInHeart(user.id) ? 'Remove from favorites' : 'Add to favorites'}
                                 >
                                     <FaHeart className="text-lg" />
                                 </button>
-                                <button 
-                                    onClick={() => ShopFunction(user)} 
-                                    className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-                                        isInCart(user.id) 
-                                            ? 'bg-[#46A358] text-white' 
+                                <button
+                                    onClick={() => ShopFunction(user)}
+                                    className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${isInCart(user.id)
+                                            ? 'bg-[#46A358] text-white'
                                             : 'bg-white/90 text-gray-700 hover:bg-white'
-                                    }`}
+                                        }`}
                                     title={isInCart(user.id) ? 'Remove from cart' : 'Add to cart'}
                                 >
                                     <FaShoppingCart className="text-lg" />
@@ -309,49 +343,42 @@ const Info = () => {
                             </div>
                         </div>
 
-                        {/* Thumbnail Gallery */}
-                        {data && data.length > 0 && randomThumbnails.length > 0 && (() => {
-                            const currentMainImage = selectedImage || user.avatar;
-                            const isMainImageSelected = !randomThumbnails.some(el => el.avatar === selectedImage);
-                            
-                            return (
-                                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                                    {/* First thumbnail - current main image */}
+                        {/* Thumbnail Gallery - FIXED */}
+                        {thumbnailData && (
+                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                {/* First thumbnail - current main image */}
+                                <button
+                                    onClick={() => setSelectedImage(thumbnailData.currentMainImage)}
+                                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${thumbnailData.isMainImageSelected
+                                            ? 'border-[#46A358] ring-2 ring-[#46A358]/20'
+                                            : 'border-gray-200 hover:border-[#46A358]'
+                                        }`}
+                                >
+                                    <img
+                                        src={thumbnailData.currentMainImage}
+                                        alt="Main image"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </button>
+                                {/* Random thumbnails */}
+                                {thumbnailData.randomThumbnails.map((el, index) => (
                                     <button
-                                        onClick={() => setSelectedImage(currentMainImage)}
-                                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                                            isMainImageSelected
+                                        key={`${el.id}-${index}`}
+                                        onClick={() => setSelectedImage(el.avatar)}
+                                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === el.avatar
                                                 ? 'border-[#46A358] ring-2 ring-[#46A358]/20'
                                                 : 'border-gray-200 hover:border-[#46A358]'
-                                        }`}
+                                            }`}
                                     >
                                         <img
-                                            src={currentMainImage}
-                                            alt="Main image"
+                                            src={el.avatar}
+                                            alt={`Thumbnail ${index + 1}`}
                                             className="w-full h-full object-cover"
                                         />
                                     </button>
-                                    {/* Random thumbnails */}
-                                    {randomThumbnails.map((el, index) => (
-                                        <button
-                                            key={el.id}
-                                            onClick={() => setSelectedImage(el.avatar)}
-                                            className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                                                selectedImage === el.avatar
-                                                    ? 'border-[#46A358] ring-2 ring-[#46A358]/20'
-                                                    : 'border-gray-200 hover:border-[#46A358]'
-                                            }`}
-                                        >
-                                            <img
-                                                src={el.avatar}
-                                                alt={`Thumbnail ${index + 1}`}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </button>
-                                    ))}
-                                </div>
-                            );
-                        })()}
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Side - Product Info */}
@@ -366,7 +393,7 @@ const Info = () => {
                                     <span className="text-4xl font-bold text-[#46A358]" style={{ fontFamily: 'Montserrat-Bold, sans-serif' }}>${user.prase}</span>
                                 </div>
                                 <div className="text-right">
-                                    <Rate allowHalf defaultValue={4.5} disabled className="mb-2" />
+                                    <Rate allowHalf defaultValue={4} disabled className="mb-2" />
                                     <p className="text-sm text-gray-600">19 Customer Reviews</p>
                                 </div>
                             </div>
@@ -380,24 +407,23 @@ const Info = () => {
                             </div>
 
                             {/* Size Selection */}
-                                <div className="flex mb-5 items-center gap-3">
+                            <div className="flex mb-5 items-center gap-3">
                                 <label className="block text-[13px] font-bold text-gray-700 mb-3">
                                     Size:
                                 </label>
-                                    {sizes.map((size) => (
-                                        <button
-                                            key={size}
-                                            onClick={() => setSelectedSize(size)}
-                                            className={`w-12 h-12 rounded-lg font-semibold transition-all duration-200 ${
-                                                selectedSize === size
-                                                    ? 'bg-[#46A358] text-white shadow-lg scale-105'
-                                                    : 'bg-gray-100 text-gray-700 border-2 border-gray-200 hover:border-[#46A358] hover:bg-gray-50'
+                                {sizes.map((size) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => setSelectedSize(size)}
+                                        className={`w-12 h-12 rounded-lg font-semibold transition-all duration-200 ${selectedSize === size
+                                                ? 'bg-[#46A358] text-white shadow-lg scale-105'
+                                                : 'bg-gray-100 text-gray-700 border-2 border-gray-200 hover:border-[#46A358] hover:bg-gray-50'
                                             }`}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
-                                </div>
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
 
                             {/* Count + Buy */}
                             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">

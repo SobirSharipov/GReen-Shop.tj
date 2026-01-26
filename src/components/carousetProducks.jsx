@@ -2,9 +2,11 @@ import { Carousel, Spin } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useGetUsersQuery } from '../services/UserApi';
 import { useNavigate } from 'react-router';
+import { mergeProducts } from '../utils/products';
 
 const CarousetProducks = () => {
-    const { data: allData, isLoading, error } = useGetUsersQuery();
+    const { data: allDataRaw, isLoading, error } = useGetUsersQuery();
+    const allData = useMemo(() => mergeProducts(allDataRaw), [allDataRaw]);
     const [selectedImageId, setSelectedImageId] = useState(null);
     const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
     const navigate = useNavigate();

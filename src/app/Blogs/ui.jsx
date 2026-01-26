@@ -14,9 +14,11 @@ import {
   FaCheckCircle
 } from 'react-icons/fa'
 import blogImage from '../../assets/img1.svg'
+import { mergeProducts } from '../../utils/products'
 
 const Blogs = () => {
-  const { data: allData, isLoading, error } = useGetUsersQuery()
+  const { data: allDataRaw, isLoading, error } = useGetUsersQuery()
+  const allData = useMemo(() => mergeProducts(allDataRaw), [allDataRaw])
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')

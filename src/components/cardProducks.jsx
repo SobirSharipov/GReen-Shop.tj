@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDeleteuserMutation, useGetUsersQuery } from '../services/UserApi';
 import { Link } from 'react-router';
+import { mergeProducts } from '../utils/products';
 
 const CardProducks = () => {
-    const { data } = useGetUsersQuery();
+    const { data: dataRaw } = useGetUsersQuery();
+    const data = mergeProducts(dataRaw);
 
 
     const truncateText = (text, maxLength) => {

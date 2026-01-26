@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Modal, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { useNavigate } from 'react-router';
 
 const AuthModal = ({ isOpen, onClose, onRegisterSuccess }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('register'); // 'login' or 'register'
   const [formData, setFormData] = useState({
     username: '',
@@ -12,6 +14,21 @@ const AuthModal = ({ isOpen, onClose, onRegisterSuccess }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const ADMIN_EMAIL = 'biznes-shop@gmail.com';
+  const ADMIN_CODE = 'biznes.tj';
+
+  const setAdminSession = () => {
+    const adminUser = {
+      username: ADMIN_CODE,
+      email: ADMIN_EMAIL,
+      registeredAt: new Date().toISOString()
+    };
+    localStorage.setItem('user', JSON.stringify(adminUser));
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('adminAuth', 'true');
+    localStorage.setItem('adminEmail', ADMIN_EMAIL);
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -51,13 +68,28 @@ const AuthModal = ({ isOpen, onClose, onRegisterSuccess }) => {
       registeredAt: new Date().toISOString()
     };
 
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('isAuthenticated', 'true');
+    const isAdminRegister =
+      formData.username.trim().toLowerCase() === ADMIN_CODE &&
+      formData.email.trim().toLowerCase() === ADMIN_EMAIL;
 
-    message.success('Registration successful!');
-    onRegisterSuccess();
-    onClose();
-    
+    if (isAdminRegister) {
+      setAdminSession();
+      message.success('Admin registration successful!');
+      onRegisterSuccess();
+      onClose();
+      navigate('/Dashboard');
+    } else {
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('isAuthenticated', 'true');
+      // normal register should not keep admin session
+      localStorage.removeItem('adminAuth');
+      localStorage.removeItem('adminEmail');
+
+      message.success('Registration successful!');
+      onRegisterSuccess();
+      onClose();
+    }
+
     // Reset form
     setFormData({
       username: '',
@@ -71,6 +103,27 @@ const AuthModal = ({ isOpen, onClose, onRegisterSuccess }) => {
     // Validation
     if (!formData.email || !formData.password) {
       message.error('Please fill in all fields');
+      return;
+    }
+
+    // Admin login (email + code in password)
+    const isAdminLogin =
+      formData.email.trim().toLowerCase() === ADMIN_EMAIL &&
+      formData.password.trim().toLowerCase() === ADMIN_CODE;
+
+    if (isAdminLogin) {
+      setAdminSession();
+      message.success('Admin login successful!');
+      onRegisterSuccess();
+      onClose();
+      navigate('/Dashboard');
+
+      setFormData({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      });
       return;
     }
 
@@ -88,6 +141,9 @@ const AuthModal = ({ isOpen, onClose, onRegisterSuccess }) => {
     }
 
     localStorage.setItem('isAuthenticated', 'true');
+    // If normal user logs in, ensure admin flag is not set
+    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminEmail');
     message.success('Login successful!');
     onRegisterSuccess();
     onClose();

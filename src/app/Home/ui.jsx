@@ -8,6 +8,7 @@ import { Pagination, Spin } from 'antd';
 import CardProducks from '../../components/cardProducks';
 import { Link } from 'react-router';
 import { FaSearch } from 'react-icons/fa';
+import { mergeProducts } from '../../utils/products';
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +30,8 @@ const Home = () => {
     
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const { data: allData, isLoading, error, refetch } = useGetUsersQuery();
+  const { data: allDataRaw, isLoading, error, refetch } = useGetUsersQuery();
+  const allData = useMemo(() => mergeProducts(allDataRaw), [allDataRaw]);
   let [deleteUser] = useDeleteuserMutation();
   
   // Filter states

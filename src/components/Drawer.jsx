@@ -32,6 +32,8 @@ const MobileDrawer = ({ isAuthenticated, userPhoto, getHeart, getCart, onUserCli
     onClose();
   };
 
+  const isAdminAuth = typeof window !== 'undefined' && localStorage.getItem('adminAuth') === 'true';
+
   const menuItems = [
     { path: '/', label: 'Home', icon: '🏠' },
     { path: '/Shop', label: 'Shop', icon: '🛍️' },
@@ -96,6 +98,23 @@ const MobileDrawer = ({ isAuthenticated, userPhoto, getHeart, getCart, onUserCli
                   )}
                 </button>
               ))}
+
+              {/* Dashboard (only for admin auth) */}
+              {isAdminAuth && (
+                <button
+                  onClick={() => handleLinkClick('/Dashboard')}
+                  className={`w-full flex items-center justify-between px-6 py-4 text-left transition-colors ${
+                    isActive('/Dashboard')
+                      ? 'bg-[#46A358]/10 text-[#46A358] border-l-4 border-[#46A358]'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-[#46A358]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">📊</span>
+                    <span className="font-medium">Dashboard</span>
+                  </div>
+                </button>
+              )}
             </nav>
 
             {/* Divider */}

@@ -4,6 +4,7 @@ import logo from '../../assets/Logo.svg'
 import logo2 from '../../../public/Vector.svg'
 import logo1 from '../../assets/logo1.svg'
 import { useGetUsersQuery } from '../../services/UserApi';
+import { mergeProducts } from '../../utils/products';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa6";
 import { Spin } from 'antd';
 import AuthModal from '../../components/AuthModal';
@@ -11,7 +12,8 @@ import MobileDrawer from '../../components/Drawer';
 import TextType from '../../components/TextType'
 
 const Layout = () => {
-  const { data, isLoading, error } = useGetUsersQuery();
+  const { data: dataRaw, isLoading, error } = useGetUsersQuery();
+  const data = mergeProducts(dataRaw);
   const location = useLocation();
   const navigate = useNavigate();
   let [getHeart, setHeart] = useState([])
@@ -19,6 +21,7 @@ const Layout = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userPhoto, setUserPhoto] = useState(null);
+  const [isAdminAuth, setIsAdminAuth] = useState(false);
 
   useEffect(() => {
     const handleHeartUpdate = () => {
@@ -69,8 +72,9 @@ const Layout = () => {
         const newCart = e.newValue ? JSON.parse(e.newValue) : [];
         setCart(newCart);
       }
-      if (e.key === 'isAuthenticated' || e.key === 'user') {
+      if (e.key === 'isAuthenticated' || e.key === 'user' || e.key === 'adminAuth') {
         setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+        setIsAdminAuth(localStorage.getItem('adminAuth') === 'true');
       }
     };
 
@@ -78,6 +82,7 @@ const Layout = () => {
 
     // Check authentication status on mount
     setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+    setIsAdminAuth(localStorage.getItem('adminAuth') === 'true');
 
     // Load user photo
     const userData = localStorage.getItem('user');
@@ -119,6 +124,7 @@ const Layout = () => {
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
+    setIsAdminAuth(localStorage.getItem('adminAuth') === 'true');
     // Load user photo after authentication
     const userData = localStorage.getItem('user');
     if (userData) {
@@ -205,6 +211,16 @@ const Layout = () => {
 
           {/* Desktop: Navigation Links */}
           <div className='hidden md:flex gap-15'>
+            {isAdminAuth && (
+              <Link to={'/Dashboard'}>
+                <p
+                  className={`${isActive('/Dashboard') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
+                  style={{ fontFamily: isActive('/Dashboard') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}
+                >
+                  Dashboard
+                </p>
+              </Link>
+            )}
             <Link to={'/'}>
               <p className={`${isActive('/') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
                 style={{ fontFamily: isActive('/') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}>
@@ -293,7 +309,7 @@ const Layout = () => {
             ) : (
               <button
                 onClick={handleUserIconClick}
-                className="hidden mdflex gap-2 items-center py-2 px-6 bg-[#46A358] text-white rounded-[10px] hover:bg-[#3a8a47] transition-colors"
+                className="hidden md:flex gap-2 items-center py-2 px-6 bg-[#46A358] text-white rounded-[10px] hover:bg-[#3a8a47] transition-colors"
                 style={{ fontFamily: 'Inter-SemiBold, sans-serif' }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
