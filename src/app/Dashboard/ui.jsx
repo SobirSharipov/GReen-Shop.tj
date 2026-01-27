@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { useGetUsersQuery } from '../../services/UserApi';
 import { getAdminProducts, getProductOverrides, mergeProducts, setAdminProducts, setProductOverrides } from '../../utils/products';
 
-const currency = (n) => `$${Number(n || 0).toFixed(2)}`;
+const currency = (n) => `$${Number(n || 0)}`;
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -346,13 +346,16 @@ const Dashboard = () => {
       const idStr = String(editingId);
       const isAdminProduct = idStr.startsWith('admin-') || adminProducts.some((p) => String(p.id) === idStr);
       if (isAdminProduct) {
-        setAdminProductsState((prev) =>
-          prev.map((p) =>
+        setAdminProductsState((prev) => {
+          const next = prev.map((p) =>
             String(p.id) === idStr
               ? { ...p, name: form.name, prase: praseNum, sku: form.sku, status: form.status, avatar: form.avatar, lorem: form.lorem }
               : p
-          )
-        );
+          );
+          // Persist immediately (so refresh won't lose it)
+          setAdminProducts(next);
+          return next;
+        });
       } else {
         const overrides = getProductOverrides();
         overrides[idStr] = {
@@ -372,19 +375,24 @@ const Dashboard = () => {
       message.success('Product updated');
     } else {
       const newId = `admin-${Date.now()}`;
-      setAdminProductsState((prev) => [
-        {
-          id: newId,
-          name: form.name,
-          prase: praseNum,
-          sku: form.sku || `SKU-${String(Date.now()).slice(-6)}`,
-          status: form.status || 'active',
-          avatar: form.avatar || '',
-          lorem: form.lorem || '',
-          data: new Date().toISOString()
-        },
-        ...prev
-      ]);
+      setAdminProductsState((prev) => {
+        const next = [
+          {
+            id: newId,
+            name: form.name,
+            prase: praseNum,
+            sku: form.sku || `SKU-${String(Date.now()).slice(-6)}`,
+            status: form.status || 'active',
+            avatar: form.avatar || '',
+            lorem: form.lorem || '',
+            data: new Date().toISOString()
+          },
+          ...prev
+        ];
+        // Persist immediately (so refresh won't lose it)
+        setAdminProducts(next);
+        return next;
+      });
       message.success('Product added');
     }
     setIsAddEditOpen(false);
@@ -401,7 +409,12 @@ const Dashboard = () => {
         const idStr = String(id);
         const isAdminProduct = idStr.startsWith('admin-') || adminProducts.some((p) => String(p.id) === idStr);
         if (isAdminProduct) {
-          setAdminProductsState((prev) => prev.filter((p) => String(p.id) !== idStr));
+          setAdminProductsState((prev) => {
+            const next = prev.filter((p) => String(p.id) !== idStr);
+            // Persist immediately (so refresh won't bring it back)
+            setAdminProducts(next);
+            return next;
+          });
         } else {
           const overrides = getProductOverrides();
           overrides[idStr] = { ...(overrides[idStr] || {}), deleted: true };

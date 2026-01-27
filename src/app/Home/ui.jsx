@@ -552,7 +552,7 @@ const Home = () => {
                       </div>
                     )}
                     {/* Heart and Cart Icons - Top Right (Always Visible) */}
-                    <div className='absolute top-2 right-2 md:top-4 md:right-4 flex gap-2 z-10'>
+                    <div className='absolute top-35 right-2 md:top-4 md:right-4 flex gap-2 z-10'>
                       <button 
                         onClick={() => ShopFunction(el)} 
                         className='bg-white/90 hover:bg-white p-2 px-2.5 rounded-full shadow-md transition-all duration-200 hover:scale-110'
@@ -616,7 +616,7 @@ const Home = () => {
             </div>
           )}
 
-          <div className='mt-8 flex justify-end'>
+          <div className='mt-8 flex md:justify-end justify-center'>
             <Pagination
               current={currentPage}
               pageSize={pageSize}
