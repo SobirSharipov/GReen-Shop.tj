@@ -10,6 +10,7 @@ import { Spin } from 'antd';
 import AuthModal from '../../components/AuthModal';
 import MobileDrawer from '../../components/Drawer';
 import TextType from '../../components/TextType'
+import { useTranslation } from 'react-i18next'
 
 const Layout = () => {
   const { data: dataRaw, isLoading, error } = useGetUsersQuery();
@@ -22,6 +23,11 @@ const Layout = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userPhoto, setUserPhoto] = useState(null);
   const [isAdminAuth, setIsAdminAuth] = useState(false);
+    let { t, i18n } = useTranslation()
+
+    function Translate(lang) {
+        i18n.changeLanguage(lang)
+    }
 
   useEffect(() => {
     const handleHeartUpdate = () => {
@@ -230,7 +236,7 @@ const Layout = () => {
             <Link to={'/Shop'}>
               <p className={`${isActive('/Shop') ? 'text-[#46A358] font-bold border-b-2 border-[#46A358] pb-1' : 'text-gray-700 hover:text-[#46A358]'} transition-colors`}
                 style={{ fontFamily: isActive('/Shop') ? 'Inter-Bold, sans-serif' : 'Inter-Medium, sans-serif' }}>
-                Shop
+                Produks
               </p>
             </Link>
             <Link to={'/Plant Care'}>
@@ -287,6 +293,11 @@ const Layout = () => {
                 </span>
               )}
             </Link>
+
+             {/* <select value={i18n.language} onChange={(e) => Translate(e.target.value)}>
+                            <option value="en">En</option>
+                            <option value="ru">RU</option>
+                        </select> */}
 
             {isAuthenticated ? (
               <button
